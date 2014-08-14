@@ -1,0 +1,88 @@
+<html>
+<head>
+<style>
+/* positioning */
+	body {
+		padding: 0 0;
+		margin: 0 0;		
+	}
+
+	.centercenter {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%) translateX(-50%);
+	    left: 50%;
+	}
+
+	#left {
+		position: absolute;
+		width: 84;
+		height: 100%;
+		background-color: #EBECED
+	}
+	#icon {
+		position: absolute;
+		top: 50%;
+		width: 64px;
+		height: 64px;
+	}
+
+	#right {
+		position: absolute;
+		left: 84px;
+		padding: 0 16;
+		height: 100%;
+
+	}
+
+
+
+/* star stuff! */
+#fivestar {
+	color:grey;
+}
+.fivestar-x {
+	float:left;
+    cursor: hand;
+    cursor: pointer;
+    font-size: 40px;
+}
+
+/* http://stackoverflow.com/questions/1321692/how-to-specifiy-the-order-of-css-classes
+later IN CSS = later in cascade!
+*/
+.fivestar-on {
+	color: red;
+}
+
+
+
+</style>
+</head>
+
+<body>
+<div id="left">
+		<img id="icon" class="centercenter" src="ui/icons/mozlove.png" />
+		<!--<img id="icon" src="ui/icons/firefox-highres.png" />-->
+</div>
+
+<div id="right">
+	<div id="questions" class="center-center">
+		<h1 id="question">
+		how do you feel about firefox?
+		</h1>
+		<div id="fivestar">
+			<div class="fivestar-x" id="fivestar1">&hearts;</div>
+			<div class="fivestar-x"	id="fivestar2">&hearts;</div>
+			<div class="fivestar-x"	id="fivestar3">&hearts;</div>
+			<div class="fivestar-x"	id="fivestar4">&hearts;</div>
+			<div class="fivestar-x"	id="fivestar5">&hearts;</div>
+		</div>
+	</div>
+</div>
+
+<script src="./fivestar.js"></script>
+
+</body>
+
+</html>

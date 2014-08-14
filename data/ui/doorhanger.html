@@ -1,0 +1,224 @@
+<!-- * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!DOCTYPE HTML>
+
+<html>
+	
+	<head>
+
+		<style>
+
+    /* mostly from https://github.com/johngruen/project-dfa/tree/master/src */
+	body {
+	  color: #333333;
+	  font-family: 'clear_sansregular'; }
+
+	/*=====MINIMAL RESETS, ADJUSTMENTS, ETC =====*/
+	h1, h2, h3, h4, h5, h6 {
+	  color: #424f5a;
+	}
+
+	h1, h2, h3 {
+	  /*padding-bottom:20px;
+	  margin-bottom: 1em;*/ }
+
+	
+	h4, h5, h6 {
+	  margin-bottom: 1.66em; }
+
+	h1, h2 {
+	  font-family: 'fira_sanslight'; }
+
+	h3, h4, h5, h6 {
+	  font-family: 'clear_sansregular'; }
+
+	ul, ol, p {
+	  line-height: 20px;
+	  margin: .5em 0 0em 0; 
+	}
+
+	/* specific heights we like */
+
+	h1 {
+		font-size:20px;
+	}
+
+	p {
+		font-size:16px;
+	}
+
+			/*div {border: solid 1px black}*/
+			body {
+				position: relative;
+				width: 400px;
+				height: 240px;
+				/*left: -10px;
+				top: -10px;*/
+				padding: 0 0;
+				margin: 0 0;
+				/*overflow: hidden;*/
+				
+			}
+
+			#topsection{
+				height: 75%;
+				position: relative;
+			}
+
+			#picture {
+				position: absolute;
+				width: 30%;
+				height: 100%;
+				
+			}
+			#icon {
+
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				padding: 0% 20%;
+				width: 64px;
+				height: 64px;
+
+			}
+
+			#textsection {
+				position: absolute;
+				margin-left: 30%;
+				width: 70%;
+				height: 100%;
+			}
+			
+			#header{
+				transform: translateX(-50%);
+				width: 100%;
+				left: 50%;
+				text-align: left;
+				top: -5px;
+				position: relative;
+				/*font-family: 'Helvetica Neue', Helvetica, sans-serif;*/
+  				/*border: solid 1px black;*/
+
+			}
+			#alltext {
+				/*height: 20%;*/
+  				position: absolute;
+  				top: 0px; left: 0; bottom: 0; right: 0;
+  				text-align: left;
+  				padding-right: 15px;
+  				/*font-family: 'Helvetica Neue', Helvetica, sans-serif;*/
+  				font-size: 14px;
+  				/*border: solid 1px black;*/	
+			}
+
+
+			#bottomsection{
+				position: relative;
+				height: 25%;
+				background: #DFE9E9;
+				border-top: solid 1px #9CA3A3;
+				
+
+			}
+
+			#explanationsection {
+				color: #666;
+			}
+
+			#whylabel {
+			  font-variant: small-caps;	
+       		  text-transform: lowercase;
+			}
+			
+			#button{
+				height: 15%;
+				width: 30%;
+				position: absolute;
+				
+  			}
+
+			.button-style {
+				top: 50%;
+				transform: translate(-50%, -50%);
+				left: 50%;
+				padding: 14px 26px;
+				font-size: 14px;
+				line-height: 60%;
+				text-shadow: 0 1px rgba(0, 0, 0, 0.4);
+				color: #fff;
+				display: inline-block;
+				vertical-align: middle;
+				text-align: center;
+				cursor: pointer;
+				font-weight: bold;
+				transition: background 0.1s ease-in-out;
+				text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+				color: #fff;
+				border-radius: 3px;
+				/*font-family: 'Helvetica Neue', Helvetica, sans-serif;*/
+			}
+			.button-style:active {
+				padding-top: 15px;
+			    margin-bottom: -1px;
+			}
+			.button-style, .button-style:hover, .button-style:active {
+				outline: 0 none;
+				text-decoration: none;
+				color: #fff;
+			}
+
+			.button-style {
+				background-color: #3fb8e8;
+				/*box-shadow: 0px 3px 0px 0px #3293ba;*/
+			}
+			.button-style:hover {
+				background-color: #1baae3;
+			}
+			.button-style:active {
+				box-shadow: 0px 1px 0px 0px #3293ba;
+			}
+
+
+		</style>
+
+
+	</head>
+
+
+	<body>
+		<div id="topsection">
+			<div id="picture">
+				
+				<img id="icon" src="icons/firefox-highres.png" />
+
+			</div>
+
+			<div id="textsection">
+				<div id="alltext">
+					<h1 id="header"> Recommendation for you </h1>
+
+					<p id="textbox"> <span id="addonname">Some Addon </span> can help you. </p>
+
+					<p id="explanationsection"><span id='whylabel'>Because: </span> you do you something</p>
+				</div>
+
+			</div>
+
+
+		</div>
+		<div id="bottomsection">
+
+			<a href="#" id="button" class="button-style"> click me ! </a>
+
+		</div>
+
+
+
+
+	</body>
+
+
+
+</html>

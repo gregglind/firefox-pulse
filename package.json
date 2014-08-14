@@ -1,9 +1,9 @@
 {
   "name": "firefox-pulse",
   "title": "firefox-pulse",
-  "id": "jid1-lzbBA5KCF6TK2Q",
-  "description": "a basic add-on",
-  "author": "",
+  "id": "firefox-pulse@ua.mozilla.org",
+  "description": "Firefox-pulse Experiment",
+  "author": "Gregg Lind <glind@mozilla.com>",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.0.1"
 }

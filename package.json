@@ -4,6 +4,16 @@
   "id": "firefox-pulse@ua.mozilla.org",
   "description": "Firefox-pulse Experiment",
   "author": "Gregg Lind <glind@mozilla.com>",
+  "contributors": [
+  	"Sevaan Frank <sfrank@mozilla.com>",
+  	"Gregg Lind <glind@mozilla.com"],
   "license": "MPL 2.0",
-  "version": "0.0.1"
+  "version": "0.0.2",
+  "homepage": "https://github.com/gregglind/firefox-pulse",
+  "permissions": {
+  	"private-browsing": false
+  }
 }
+
+
+

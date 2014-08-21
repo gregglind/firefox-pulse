@@ -1,0 +1,7 @@
+/* styles for escapable */
+
+body.loaded {
+	border: 0px solid orange;
+	border-width: 0px 24px;
+	transition: border-width .1s ease-in-out;
+}

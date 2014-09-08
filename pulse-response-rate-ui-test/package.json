@@ -1,0 +1,12 @@
+{
+  "title": "Firefox Pulse Response Rate Test",
+  "name": "pulse-response-rate-ui-test",
+  "version": "0.0.1",
+  "description": "Variations in UI for determining response rate",
+  "main": "index.js",
+  "author": "Gregg Lind <glind@mozilla.com>",
+  "engines": {
+    "firefox": ">=32.0a1"
+  },
+  "license": "MPL"
+}

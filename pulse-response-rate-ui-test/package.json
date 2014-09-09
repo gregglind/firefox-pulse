@@ -1,12 +1,14 @@
 {
-  "title": "Firefox Pulse Response Rate Test",
-  "name": "pulse-response-rate-ui-test",
-  "version": "0.0.1",
-  "description": "Variations in UI for determining response rate",
-  "main": "index.js",
-  "author": "Gregg Lind <glind@mozilla.com>",
-  "engines": {
-    "firefox": ">=32.0a1"
-  },
-  "license": "MPL"
+    "license": "MPL",
+    "description": "Variations in UI for determining response rate",
+    "engines": {
+        "firefox": ">=32.0a1"
+    },
+    "author": "Gregg Lind <glind@mozilla.com>",
+    "title": "Firefox Pulse Response Rate Test",
+    "homepage": "https://github.com/gregglind/firefox-pulse",
+    "version": "0.0.1",
+    "main": "lib/index.js",
+    "id": "pulse-response-rate-ui-test@testpilot.mozilla.com",
+    "name": "pulse-response-rate-ui-test"
 }

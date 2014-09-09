@@ -14,6 +14,8 @@
 
 var self = require('sdk/self');
 
+const tabs = require("sdk/tabs");
+let tabsObs = require("sdk/tabs/observer");
 
 let main = exports.main = function (options, callback) {
 

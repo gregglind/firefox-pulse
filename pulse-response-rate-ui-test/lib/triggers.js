@@ -16,6 +16,8 @@ const tabs = require("sdk/tabs");
 
 const { on, once, off, emit } = require('sdk/event/core');
 
+const timers = require("sdk/timers");
+
 // map or list to store them all?
 let undo = [];
 
@@ -28,6 +30,16 @@ let reset = exports.reset = function () {
     (k[0]).apply(k[1], k.slice(2));
   });
 };
+
+/** Triggers have the same 'feel'.
+  *
+  * Args:
+  *   consequence_fn: callback. what happens after completion.
+  *     (todo: should these take args?)
+  *   extra args: specific to each.
+  *
+  * Returns:  unclear
+  */
 
 
 //
@@ -52,5 +64,15 @@ let newtab = exports.newtab = function (consequence_fn) {
   //console.log('49', args);
   undo.push(args);
   //console.log('51',undo);
+};
+
+/** 'wait a bit' triggers */
+let after_a_while = exports.after_a_while = function (consequence_fn, delay_ms) {
+  // setup
+  let t = timers.setTimeout(consequence_fn, delay_ms);
+
+  // undo
+  let args = [timers.clearTimeout, timers, consequence_fn];
+  undo.push(args);
 };
 

@@ -59,25 +59,57 @@ exports["test mutiple newtab triggers fire"] = function (assert, done) {
 exports["test triggers reset actually resets"] = function (assert, done) {
   done = utils.doneclean(done);
 
-  // set up new tab trigger
-  let tabfn = function () {
-    assert.fail("should not be seen!");
+  let oks = 0;
+  let n = 2;
+
+  let nope = function () {
+    assert.fail("should not be seen! " + this.str);
   };
-  triggers.newtab(tabfn);
+
+  // SETUPS (one per trigger type)
+
+  // set up new tab trigger
+  triggers.newtab(nope.bind(null, "newtab"));
+
+  // new while trigger
+  triggers.after_a_while(nope.bind(null, "after_a_while"), 300 /*ms*/);
+
+  // CLEAR
 
   // actually clear triggers
   triggers.reset();  // should clear! no guarantees on how fast
 
+
+  // TESTS (one per trigger type)
+
+  // tests:  tab open context
   tabs.open({
     url:"about:blank",
     onOpen: () => utils.wait(100).then(
     () => {
       assert.pass("no trigger happened");
+      oks ++;
       done();
     }) // basically, no signal is good!
   });
+
+  // tests: after_a_while
+  utils.wait(300).then(()=> {assert.pass("after_a_while ok"); oks++;});
+
+
+  // FINAL CHECK
+  utils.wait(1000).then(()=> oks >= n && done());
+
 };
 
+
+exports['test after_a_while works'] = function (assert, done) {
+    triggers.after_a_while(() => {
+      assert.ok("caught after_a_while");
+      done();
+    },
+    100);
+};
 
 require("sdk/test").run(exports);
 

@@ -14,9 +14,40 @@
 
 var self = require('sdk/self');
 
-const tabs = require("sdk/tabs");
-let tabsObs = require("sdk/tabs/observer");
+
+const experiment = require("experiment");
+
+const promises = require("sdk/core/promise");
+const { defer, resolve } = promises;
 
 let main = exports.main = function (options, callback) {
+  console.log("running");
+  // args
+  let options = options.staticArgs || {};
 
+  // special options modes
+    // reset:  bool
+    // armnumber:  int
+    // (various urls?)
+    // debug: bool
+    // phonehome:  bool
+
+  // upgrades
+  //
+
+  // standard sequence - a la a unit test
+  experiment.firstStartup().then(   // all side effects.
+  experiment.everyRun).then(   // - run
+  //resolve(() => console.log('running'))
+  ).then(  // what is this one?
+    null,
+    console.error // all errors;
+  );
+
+  // - teardown
 };
+
+// teardown
+
+
+

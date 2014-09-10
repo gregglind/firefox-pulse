@@ -22,6 +22,7 @@ const timers = require("sdk/timers");
 let undo = [];
 
 let reset = exports.reset = function () {
+  // TODO, improve by taking any that return promises and waiting.
   // not sure how this should work.
   console.log("clearing!");
   undo.forEach(function (k, i) {
@@ -72,7 +73,7 @@ let after_a_while = exports.after_a_while = function (consequence_fn, delay_ms) 
   let t = timers.setTimeout(consequence_fn, delay_ms);
 
   // undo
-  let args = [timers.clearTimeout, timers, consequence_fn];
+  let args = [timers.clearTimeout, timers, t];
   undo.push(args);
 };
 

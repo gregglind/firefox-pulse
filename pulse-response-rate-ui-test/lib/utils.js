@@ -13,14 +13,24 @@
 "use strict";
 
 const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
+const { defer } = promises;
 
 const timers = require("sdk/timers");
+const uuid = require("sdk/util/uuid");
 
-/**
+/** promised wait
+  *
+  * resolves empty after x ms.
+  *
+  * Note: unkillable, unlike normal timeout.
   */
 let wait = exports.wait = function (ms) {
   let { promise, resolve } = defer();
   timers.setTimeout(resolve, ms);
   return promise;
+};
+
+/** uuid */
+let uu = exports.uu = function () {
+  return uuid.uuid().toString().slice(1,-1);
 };

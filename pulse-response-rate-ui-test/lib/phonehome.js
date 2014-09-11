@@ -14,11 +14,9 @@
 
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
-
 const request = require("sdk/request");
-
 const { extend } = require("sdk/util/object");
-
+const myprefs = require("sdk/simple-prefs").prefs;
 
 /** add common fields such as timestamp, userid, etc. to event data
   * fields will be appending in newkey 'extra', which is a dict.
@@ -35,6 +33,10 @@ let annotate = exports.annotate = function (obj) {
   // do they have abp?
   // etc?
   obj.extra = {};
+  ['person', 'armnumber', 'armname'].forEach(
+    (k) => obj.extra[k] = myprefs[k]
+  );
+
   return obj;
 };
 

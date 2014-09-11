@@ -22,6 +22,8 @@ let { emit } = require('sdk/event/core');
 let triggers = require("triggers");
 let arms = require("arms");
 
+const { uu } = require("./utils");
+
 /**
   Assumptions...
 
@@ -44,7 +46,6 @@ let rememberArm = function (data) {
   myprefs.armnumber = data.number;
   myprefs.armname = data.name;
   // other stuff on history, arm stuff?
-  // person.id?
 };
 
 /* useful in cases where we know the armno, but not the armdata */
@@ -54,13 +55,21 @@ let setupArm = exports.setupArm = function (armnumber) {
   emit(observer, "set-arm", armnumber);
 };
 
+/** is the experiment setup?
+  *
+  */
+let isSetup = exports.isSetup = function () {
+  return myprefs.configured === true;
+};
+
 let firstStartup = exports.firstStartup = function () {
   let {promise, resolve} = defer();
   reset();
 
   //setup
-  myprefs.person = '1234';
-  setupArm(); // here, random
+  myprefs.person = uu();
+  setupArm(); // here, random, sets some prefs and module var
+  myprefs.configured = true;
   resolve();
   return promise;
 };
@@ -81,10 +90,9 @@ let everyRun = exports.everyRun = function () {
 
 
 let reset = exports.reset = function () {
-  delete myprefs.setup;
-  delete myprefs.person;
-  delete myprefs.armnumber;
-  delete myprefs.history;
+  for (let k in myprefs) {
+    delete myprefs[k];
+  }
 };
 
 let changeArm = exports.changeArm = function (armnumber) {

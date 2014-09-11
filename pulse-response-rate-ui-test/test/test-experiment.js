@@ -60,6 +60,7 @@ exports['test experiment firstStartup sets data'] = function(assert, done) {
   experiment.firstStartup().then(
   () => {
     assert.ok(myprefs.armnumber !== undefined, "armnumber is set");
+    assert.ok(myprefs.person !== undefined, "person is set");
     done();
   });
 };
@@ -71,6 +72,17 @@ exports['test experiment reset clears data'] = function(assert) {
   assert.equal(myprefs.armnumber, undefined, 'armnumber clears');
 };
 
+
+exports['test isSetup'] = function(assert, done) {
+  done = utils.doneclean(done);
+  experiment.reset();
+  assert.ok(!experiment.isSetup(), "resetting unsetups experiment");
+  experiment.firstStartup().then(
+  () =>{
+    assert.ok(experiment.isSetup(), "experiment now setup");
+    done();
+  });
+};
 
 /** model test.  copy as necessary!
 

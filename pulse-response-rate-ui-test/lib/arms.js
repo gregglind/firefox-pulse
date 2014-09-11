@@ -22,7 +22,9 @@
 // element
 // question
 
-const dh = require("./ui/doorhanger");
+const ui = require("./ui");
+console.log(Object.keys(ui));
+
 const triggers = require("./triggers");
 
 const promises = require("sdk/core/promise");
@@ -57,8 +59,7 @@ const ARMS = exports.ARMS = [
       triggers.after_a_while(
         () => {
           console.log("about to fire panel");
-          dh.msgPanel({
-          }).show();
+          ui.panel_big({}).show();
         },
         200 /* ms */
       );
@@ -74,8 +75,7 @@ const ARMS = exports.ARMS = [
       triggers.after_a_while(
         () => {
           console.log("about to fire panel");
-          dh.msgPanel({
-          }).show();
+          ui.panel_big({}).show();
         },
         200 /* ms */
       );

@@ -33,10 +33,12 @@ let annotate = exports.annotate = function (obj) {
   // do they have abp?
   // etc?
   obj.extra = {};
-  ['person', 'armnumber', 'armname'].forEach(
+  ['person', 'armnumber', 'armname', 'firstrun'].forEach(
     (k) => obj.extra[k] = myprefs[k]
   );
 
+  //
+  obj.extra.ts = Date.now();
   return obj;
 };
 
@@ -78,7 +80,7 @@ let phonehome = exports.phonehome = function(dataObject, options){
   options = extend({}, config, options);
 
   let { promise, resolve } = defer();
-  function requestCompleted(which, response, cb) {
+  function requestCompleted(which, cb, response) {
     console.log("REQUEST COMPLETE", which, response.status);
     cb();
   }

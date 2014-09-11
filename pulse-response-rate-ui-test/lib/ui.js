@@ -11,33 +11,183 @@
 /*global */
 
 "use strict";
+const { extend } = require("sdk/util/object");
+const tabs = require("sdk/tabs");
 
 const dh = require("ui/doorhanger");
 const notification = require("ui/notification");
+const { anchor } = require("ui/anchor");
 
-/* are these factories for the ui el's? */
+const { phonehome } = require("phonehome");
+const utils = require("utils");
+const uiutils = require("ui/ui-utils");
+
+/** Factories for use with 'arms'
+  */
+
 
 console.log("ui overall library");
 
 let fake = () => {};
 
-exports.panel_big = () => {
-  console.log("about to fire panel");
-  return dh.msgPanel({
-    width: 500,
-    height: 500
-  });
+// curry the few variable things
+let metapanel = function(overrides) {
+  // the args to curry
+  let {width, height, anchor_fn} = overrides;
+
+  // the factory
+  let fn = function(Q, flowid) {
+    Q = Q || {};
+    let cto = extend(
+      {},
+      dh.defaultSctiptOptions,
+      Q,
+      {flowid: flowid}
+    );
+    console.log("about to fire panel");
+
+    let P = dh.msgPanel({
+      width: width,   //
+      height: height, //
+      contentScriptOptions: cto,
+      onHide: function () {
+        phonehome({flowid: flowid, msg: "flow-ui-closed"});
+      }
+    });
+    return {
+      widget: P,
+      go: () => P.show({}, anchor_fn())
+    };
+  };
+  return fn;
 };
 
-exports.panel_small = fake;
+// needs to handle vote and page open!
+let metanotification = function (overrides) {
+  let isBottom  = overrides.bottom == true;
+  console.log("is bottom?", isBottom);
+  let fn = (Q, flowid) => {
+    // make buttons.
+    let buttons= [];
+    for (let ii=1; ii <= Q.outof; ii++) {
+      let b = notification.nbButtons[ii]({
+        callback: function(nb, b) {
+          console.log('nb rated', ii);
+          let info = extend({},
+            Q,
+            {
+              rating: ii,
+              flowid: flowid,
+              msg: 'flow-ui-closed'
+            });
+          phonehome(info);
+          uiutils.openAfterPage(info);
+        }
+      });
+      buttons.push(b);
+    }
 
-exports.panel_big_unanchored = fake;
+    let bad_msg = "no thanks";
+    buttons.push(notification.nbButtons[bad_msg]({
+      callback: function(nb, b) {
+        console.log(bad_msg);
+        let info = extend({},
+          Q,
+          {
+            flowid: flowid,
+            msg: 'flow-ui-refused'
+          });
+        phonehome(info);
+      }
+    }));
 
-exports.notification_top = fake;
+    let nb = notification.notificationbox(null,isBottom); // bottom!
+    // make banner
+    let P = notification.banner({
+      msg: Q.question,
+      id: null,
+      icon: null, //"chrome://global/skin/icons/question-large.png",
+      priority: null,
+      buttons: buttons,
+      callback: null,
+      nb: nb
+    });
 
-exports.notification_bottom = fake;
+    return {
+      widget: P,
+      go: () => {} // empty!
+    };
+  };
+  return fn;
+};
 
-exports.background_tab = fake;
+
+
+// actual ui's as seen by the arms
+
+exports.panel_big = (Q, flowid) => {
+  return (metapanel({
+    width: 500,
+    height: 400,
+    anchor_fn: anchor
+  })(Q, flowid));
+};
+
+exports.panel_small = (Q, flowid) => {
+  return (metapanel({
+    width: 300,
+    height: 300,
+    anchor_fn: anchor
+  })(Q, flowid));
+};
+
+exports.panel_big_unanchored = (Q, flowid) => {
+  return (metapanel({
+    width: 500,
+    height: 400,
+    anchor_fn: function() {return null;}
+  })(Q, flowid));
+};
+
+exports.notification_top = (Q, flowid) => {
+  return (metanotification({
+    bottom: false,
+  })(Q, flowid));
+};
+
+exports.notification_bottom = (Q, flowid) => {
+  return (metanotification({
+    bottom: true,
+  })(Q, flowid));
+};
+
+
+
+/*
+exports.background_tab = (Q, flowid) => {
+    Q = Q || {};
+    let cto = extend({},
+      dh.defaultSctiptOptions,
+      Q,
+      {flowid: flowid}
+    );
+    console.log("about to fire panel");
+    let P = dh.msgPanel({
+      width: width,   //
+      height: height, //
+      contentScriptOptions: cto,
+      onHide: function () {
+        phonehome({flowid: flowid, msg: "flow-ui-closed"});
+      }
+    });
+
+  tabs.open()
+  return {
+    widget: P,
+    go:  () => P.show(null, anchor())
+  };
+};
+*/
 
 exports.about_newtab_mod = fake;
 

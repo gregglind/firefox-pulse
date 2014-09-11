@@ -62,13 +62,14 @@ let isSetup = exports.isSetup = function () {
   return myprefs.configured === true;
 };
 
-let firstStartup = exports.firstStartup = function () {
+let firstStartup = exports.firstStartup = function (armnumber) {
   let {promise, resolve} = defer();
   reset();
 
   //setup
+  myprefs.firstrun = "" + Date.now();
   myprefs.person = uu();
-  setupArm(); // here, random, sets some prefs and module var
+  setupArm(armnumber); // here, random, sets some prefs and module var
   myprefs.configured = true;
   resolve();
   return promise;

@@ -28,7 +28,7 @@ let P = pageMod.PageMod({
   onAttach: function(worker) {
     worker.port.on("ui", function (which) {
       console.log("which ui:", which);
-      ui.panel_big().show();
+      ui.panel_big().go();
       //ui[which]().show();
     });
   }

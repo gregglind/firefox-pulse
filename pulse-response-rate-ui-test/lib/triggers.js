@@ -18,6 +18,8 @@ const { on, once, off, emit } = require('sdk/event/core');
 
 const timers = require("sdk/timers");
 
+const utils = require("utils");
+
 // map or list to store them all?
 let undo = [];
 
@@ -46,6 +48,8 @@ let reset = exports.reset = function () {
 //
 let tabObs = require('sdk/tabs/observer').observer;
 
+/** (about 500 ms after newtab open)
+  */
 let newtab = exports.newtab = function (consequence_fn) {
   console.log("making consequence_fn");
 
@@ -54,11 +58,13 @@ let newtab = exports.newtab = function (consequence_fn) {
   // https://github.com/mozilla/addon-sdk/blob/master/lib/sdk/deprecated/events.js#L56-L61
   let selfRemoving = function selfRemoving () {
     tabObs.removeListener("open", selfRemoving);
-    consequence_fn.apply(tabObs, arguments); // actually do it!
+    utils.wait(500).then( // the wait is so the new tab can get active
+    () => consequence_fn.apply(tabObs, arguments) // do it
+    );
   };
 
   tabObs.on("open", selfRemoving); // really, it's a 'once'
-  console.log("48", tabObs._listeners("open").map((x) => console.log(x.toSource())));
+  //console.log("48", tabObs._listeners("open").map((x) => console.log(x.toSource())));
 
   let args = [tabObs.removeListener, tabObs, 'open', selfRemoving];
   //console.log(args.map((x)=>typeof x));

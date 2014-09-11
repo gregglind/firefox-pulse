@@ -44,6 +44,18 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+	 * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+	/*jshint forin:true, noarg:false, noempty:true, eqeqeq:true, bitwise:true,
+	  strict:true, undef:true, curly:false, browser:true,
+	  unused:true,
+	  indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
+	  globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
+
+	/*global console, self*/
+
 	"use strict";
 
 	console.log("question.js");
@@ -64,12 +76,13 @@
 	      symbolLit: "★",
 	      outof: 5,
 	      afterUrl: "after.html",
-	      question:  "Rate Firefox"
+	      question:  "Rate Firefox",
+	      flowid: "abcdef"
 	  };
 	  self.port = __webpack_require__(1).port;
 	} else {
-	  console.log("using real 'self'")
-	};
+	  console.log("using real 'self'");
+	}
 
 	// see:  http://www.radioactivethinking.com/rateit/example/example.htm
 
@@ -77,14 +90,14 @@
 	(function(){
 	  console.log("running worker code");
 	  var unlit = self.options.symbolUnlit;
-	  var lit  = self.options.symbolLit
+	  var lit  = self.options.symbolLit;
 	  var fivestar = window.document.getElementById("rating");
 
 	  // <div class="rating-x" id="rating1">&hearts;</div>
 
 	  $("#question").text(self.options.question);
 
-	  function makeEls(n) {
+	  function makeEls() {
 	    $("#rating").empty();
 	    console.log("emptied!");
 	    for (var ii = 0;  ii < self.options.outof; ii++) {
@@ -101,25 +114,25 @@
 	        n = Number(n,10);
 	        setStars(n);
 	        if (self===undefined) {
-	          console.log("no self!")
+	          console.log("no self!");
 	        } else {
 	          if (self.port === undefined) {
 	            console.log("no port either!");
 	          } else {
 	            console.log(Object.keys(self.port));
 	          }
-	        };
+	        }
 	        self.port.emit('rate', {rating: n,
 	          outof: self.options.outof,
-	          question: self.options.question
+	          question: self.options.question,
+	          flowid: self.options.flowid
 	        });
 	        self.port.emit("close");
-	        self.port.emit("open-afterpage");
+	        self.port.emit("open-afterpage", self.options.flowid);
 	      });
 
 	      $("#rating").append($div);
-	  }
-
+	    }
 	  }
 
 	  function setStars(n){

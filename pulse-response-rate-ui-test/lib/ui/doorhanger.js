@@ -21,6 +21,7 @@ const tabs = require("sdk/tabs");
 const { phonehome }  = require("phonehome");
 
 const utils = require("utils");
+const uiutils = require("ui/ui-utils");
 
 // args:  size, message
 /**
@@ -69,10 +70,7 @@ let msgPanel = exports.msgPanel = function (options) {
   });
   P.port.on("open-afterpage", function () {
     console.log("got open-afterpage");
-    tabs.open({
-      url: data.url("after.html"),
-      inBackground: true
-    });
+    uiutils.openAfterPage(); // with some data?
   });
   P.port.on("rate", function (info) {
     console.log("got a rating, should phone home");
@@ -111,8 +109,6 @@ let dhAsPage = () => {
         phonehome(info);
       });
 
-
-
       ["close", "open-afterpage", "rate"].forEach((k) => {
         worker.port.on(k, function (d) {
           console.log("dh", k, d);
@@ -123,5 +119,6 @@ let dhAsPage = () => {
   let options = extend({}, panelDefaults, these);
   pageMod.PageMod(options);
 };
+
 
 dhAsPage();

@@ -15,6 +15,7 @@
 var self = require('sdk/self');
 
 const experiment = require("experiment");
+const phonehome = require("phonehome");
 
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
@@ -39,14 +40,17 @@ let main = exports.main = function (options, callback) {
 
   // global phone home options
   if (options.phonehome !== undefined) {
-    experiment.config.phonehome = options.phonehome;  // default: false
+    phonehome.config.phonehome = options.phonehome;  // default: false
   }
   if (options.testing !== undefined) {
-    experiment.config.testing = options.testing;  // default: true
+    phonehome.config.testing = options.testing;  // default: true
   }
 
-  if (options.arnumber !== undefined) {
-    experiment.changeArm(Number(options.armnumber,10));
+  let armnumber; // undef;
+
+  if (options.armnumber !== undefined) {
+    console.log("force setting arm");
+    armnumber = Number(options.armnumber,10);
   }
 
   // upgrades
@@ -56,7 +60,7 @@ let main = exports.main = function (options, callback) {
   let setup = resolve(true);
 
   if (!experiment.isSetup()) {
-    setup = experiment.firstStartup();
+    setup = experiment.firstStartup(armnumber);
   }
 
   setup.then(   // all side effects.

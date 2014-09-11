@@ -14,49 +14,59 @@
 
 var self = require('sdk/self');
 
-
 const experiment = require("experiment");
 
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
 
 
-require("./ui/uitest");
-
 let main = exports.main = function (options, callback) {
   console.log("running");
   // args
-  let options = options.staticArgs || {};
+  options = options.staticArgs || {};
 
-  if (options.self) {
-    require("sdk/tabs").open(self.data.url(""));
-    require("sdk/tabs").open(self.data.url("uitest.html"));
-    require("sdk/tabs").open(self.data.url("question.html"));
-
+  if (options.showui) {
+    require("./ui/uitest");
+    let tabs = require("sdk/tabs");
+    tabs.open(self.data.url(""));
+    tabs.open(self.data.url("uitest.html"));
+    tabs.open(self.data.url("question.html"));
   }
-  // special options modes
-    // reset:  bool
-    // armnumber:  int
-    // (various urls?)
-    // debug: bool
-    // phonehome:  bool
+
+  if (options.reset) {
+    experiment.reset();
+  }
+
+  // global phone home options
+  if (options.phonehome !== undefined) {
+    experiment.config.phonehome = options.phonehome;  // default: false
+  }
+  if (options.testing !== undefined) {
+    experiment.config.testing = options.testing;  // default: true
+  }
+
+  if (options.arnumber !== undefined) {
+    experiment.changeArm(Number(options.armnumber,10));
+  }
 
   // upgrades
   //
 
   // standard sequence - a la a unit test
-  experiment.firstStartup().then(   // all side effects.
+  let setup = resolve(true);
+
+  if (!experiment.isSetup()) {
+    setup = experiment.firstStartup();
+  }
+
+  setup.then(   // all side effects.
   experiment.everyRun).then(   // - run
   //resolve(() => console.log('running'))
-  ).then(  // what is this one?
-    null,
-    console.error // all errors;
+  ).then(
+  null, console.error // all errors;
   );
 
   // - teardown
 };
 
 // teardown
-
-
-

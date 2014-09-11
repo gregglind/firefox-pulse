@@ -20,11 +20,20 @@ const experiment = require("experiment");
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
 
+
+require("./ui/uitest");
+
 let main = exports.main = function (options, callback) {
   console.log("running");
   // args
   let options = options.staticArgs || {};
 
+  if (options.self) {
+    require("sdk/tabs").open(self.data.url(""));
+    require("sdk/tabs").open(self.data.url("uitest.html"));
+    require("sdk/tabs").open(self.data.url("question.html"));
+
+  }
   // special options modes
     // reset:  bool
     // armnumber:  int

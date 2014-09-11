@@ -92,6 +92,27 @@ let dhAsPage = () => {
     //include: /.*\/question.html$/,
     include: data.url("question.html"),
     onAttach: function(worker) {
+      worker.port.on("close", function () {
+        console.log("got close");
+        utils.wait(200).then(() => {
+          //P.hide();
+          //P.destroy();
+        });
+      });
+      worker.port.on("open-afterpage", function () {
+        console.log("got open-afterpage");
+        tabs.open({
+          url: data.url("after.html"),
+          inBackground: true
+        });
+      });
+      worker.port.on("rate", function (info) {
+        console.log("got a rating, should phone home");
+        phonehome(info);
+      });
+
+
+
       ["close", "open-afterpage", "rate"].forEach((k) => {
         worker.port.on(k, function (d) {
           console.log("dh", k, d);
@@ -100,7 +121,6 @@ let dhAsPage = () => {
     }
   };
   let options = extend({}, panelDefaults, these);
-
   pageMod.PageMod(options);
 };
 

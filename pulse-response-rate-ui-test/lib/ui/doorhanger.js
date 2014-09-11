@@ -16,9 +16,11 @@
 const data = require("sdk/self").data;
 const { Panel } = require("sdk/panel");
 const { extend } = require("sdk/util/object");
+const tabs = require("sdk/tabs");
 
-//const { phonehome }  = require("phonehome");
+const { phonehome }  = require("phonehome");
 
+const utils = require("utils");
 
 // args:  size, message
 /**
@@ -29,29 +31,77 @@ const { extend } = require("sdk/util/object");
 
   More: https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/panel
 */
-let msgPanel = exports.msgPanel = function (options) {
-  let defaults = {
-      width: 200 + 3,
-      height: 240 + 3,
-      //contentURL: data.url('fivestar.html'),
-      contentURL: data.url('doorhanger.html'),
-      contentScriptFile: data.url('worker/doorhanger.js'),
-      contentScriptOptions: {
-        questionText: "Please Rate Firefox",
-        numstars: 5
-        // afterUrl: "some/url"
-      },
-      onShow: function () {
-        // phone?  or not?
-      },
-      onHide: function () {
-      }
-  };
-  options = extend(defaults, options);
 
-  return Panel(options)
+let defaultSctiptOptions = exports.defaultSctiptOptions = {
+  symbolUnlit: "☆",
+  symbolLit: "★",
+  outof: 5,
+  afterUrl: "after.html",
+  question:  "Rate Firefox"
+};
+
+
+let panelDefaults = {
+    width: 400 + 3,
+    height: 500 + 3,
+    //contentURL: data.url('fivestar.html'),
+    contentURL: data.url('question.html'),
+    contentScriptFile: data.url('packed-question.js'),
+    contentScriptOptions: defaultSctiptOptions,
+    onShow: function () {
+      // phone?  or not?
+    },
+    onHide: function () {
+    }
+};
+
+let msgPanel = exports.msgPanel = function (options) {
+  options = extend({}, panelDefaults, options);
+  let P = Panel(options);
+  // set up some pre-mapped things.
+  P.port.on("close", function () {
+    console.log("got close");
+    utils.wait(200).then(() => {
+      P.hide();
+      P.destroy();
+    })
+
+  });
+  P.port.on("open-afterpage", function () {
+    console.log("got open-afterpage");
+    tabs.open({
+      url: data.url("after.html"),
+      inBackground: true
+    });
+  });
+  P.port.on("rate", function (info) {
+    console.log("got a rating, should phone home");
+    phonehome(info);
+  });
+
+  return P;
 };
 
 // args:  size, message
 
 
+/// for working on this as a page.
+const pageMod = require("sdk/page-mod");
+let dhAsPage = () => {
+  let these = {
+    //include: /.*\/question.html$/,
+    include: data.url("question.html"),
+    onAttach: function(worker) {
+      ["close", "open-afterpage", "rate"].forEach((k) => {
+        worker.port.on(k, function (d) {
+          console.log("dh", k, d);
+        });
+      });
+    }
+  };
+  let options = extend({}, panelDefaults, these);
+
+  pageMod.PageMod(options);
+};
+
+dhAsPage();

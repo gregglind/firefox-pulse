@@ -12,6 +12,9 @@
 
 "use strict";
 
+const dh = require("ui/doorhanger");
+const notification = require("ui/notification");
+
 /* are these factories for the ui el's? */
 
 console.log("ui overall library");
@@ -20,14 +23,9 @@ let fake = () => {};
 
 exports.panel_big = () => {
   console.log("about to fire panel");
-  dh.msgPanel({
-    width: "500",
-    height: "500",
-    // contentScript:  webpacked?
-    // handles 'close', 'engage', 'vote', 'never'
-    // are these the same for all?
-    //
-    //
+  return dh.msgPanel({
+    width: 500,
+    height: 500
   });
 };
 

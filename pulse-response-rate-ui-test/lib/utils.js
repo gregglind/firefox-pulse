@@ -12,6 +12,8 @@
 
 "use strict";
 
+const promises = require("sdk/core/promise");
+const { defer, resolve } = promises;
 
 const timers = require("sdk/timers");
 

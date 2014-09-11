@@ -150,6 +150,16 @@
 	    });
 	  }
 
+	  $("#nothanks").click(function (evt) {
+	    self.port.emit('refuse', {
+	      question: self.options.question,
+	      flowid: self.options.flowid
+	    });
+	    self.port.emit("close");
+	  });
+
+
+
 	  // do it all!
 	  makeEls();
 	})();

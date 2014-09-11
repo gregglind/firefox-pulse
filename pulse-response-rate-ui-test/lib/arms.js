@@ -102,12 +102,12 @@ let widgets = [
    fn:  (Q, flowid) => {
     return ui.notification_bottom(Q, flowid);
    }
-  }
-   /*,
+  },
   {alias:'background_tab',
    fn:  (Q, flowid) => {
     return ui.background_tab(Q, flowid);
-   }},*/
+   }
+  }
 ];
 
 let gen_arm = exports.gen_arm = function (I, Q, W) {

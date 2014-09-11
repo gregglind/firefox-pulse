@@ -11,6 +11,7 @@
 /*global */
 
 "use strict";
+const { data } = require("sdk/self");
 const { extend } = require("sdk/util/object");
 const tabs = require("sdk/tabs");
 
@@ -127,7 +128,7 @@ let metanotification = function (overrides) {
 
 exports.panel_big = (Q, flowid) => {
   return (metapanel({
-    width: 500,
+    width: 600,
     height: 400,
     anchor_fn: anchor
   })(Q, flowid));
@@ -135,7 +136,7 @@ exports.panel_big = (Q, flowid) => {
 
 exports.panel_small = (Q, flowid) => {
   return (metapanel({
-    width: 300,
+    width: 450,
     height: 300,
     anchor_fn: anchor
   })(Q, flowid));
@@ -143,7 +144,7 @@ exports.panel_small = (Q, flowid) => {
 
 exports.panel_big_unanchored = (Q, flowid) => {
   return (metapanel({
-    width: 500,
+    width: 600,
     height: 400,
     anchor_fn: function() {return null;}
   })(Q, flowid));
@@ -161,33 +162,26 @@ exports.notification_bottom = (Q, flowid) => {
   })(Q, flowid));
 };
 
-
-
-/*
 exports.background_tab = (Q, flowid) => {
-    Q = Q || {};
-    let cto = extend({},
-      dh.defaultSctiptOptions,
-      Q,
-      {flowid: flowid}
-    );
-    console.log("about to fire panel");
-    let P = dh.msgPanel({
-      width: width,   //
-      height: height, //
-      contentScriptOptions: cto,
-      onHide: function () {
-        phonehome({flowid: flowid, msg: "flow-ui-closed"});
-      }
-    });
-
-  tabs.open()
-  return {
+  Q = Q || {};
+  let cto = extend(
+    {},
+    dh.defaultSctiptOptions,
+    Q,
+    {flowid: flowid}
+  );
+  let P = dh.questionAsPage(cto);
+  return ({
     widget: P,
-    go:  () => P.show(null, anchor())
-  };
+    go: function () {
+      tabs.open({
+        url:data.url("question.html"),
+        inBackground: true,
+      });
+    }
+  });
 };
-*/
+
 
 exports.about_newtab_mod = fake;
 

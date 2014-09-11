@@ -29,7 +29,8 @@ let opentab = function (options) {
   if (options.onOpen) {
     throw Error("opentab options can't have onOpen, or promise won't resolve.");
   }
-  let newopts = extend({
+  let newopts = extend({},
+  {
     url: "about:blank",
     onOpen: function onOpen(tab) {
       resolve(true);

@@ -60,7 +60,14 @@
 		left: 84px;
 		padding: 0 16px;
 		height: 100%;
+	}
 
+	#right-sub {
+		/*
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		*/
 	}
 
 /* star stuff! */
@@ -98,31 +105,35 @@ later IN CSS = later in cascade!
 	</div>
 
 	<div id="right">
-		<div id="questions" class="">
-			<h1 id="question">
-			how do you feel about firefox?
-			</h1>
-			<div id="rating">
-				<div class="rating-x" id="rating1">&hearts;</div>
-				<div class="rating-x"	id="rating2">&hearts;</div>
-				<div class="rating-x"	id="rating3">&hearts;</div>
-				<div class="rating-x"	id="rating4">&hearts;</div>
-				<div class="rating-x"	id="rating5">&hearts;</div>
+		<div id="right-sub">
+			<div id="questions" class="">
+				<h1 id="question">
+				how do you feel about firefox?
+				</h1>
+				<div class="rateit bigstars" data-rateit-starwidth="32" data-rateit-starheight="32">stars</div>
+
+				<div id="rating">
+					<div class="rating-x" id="rating1">&hearts;</div>
+					<div class="rating-x"	id="rating2">&hearts;</div>
+					<div class="rating-x"	id="rating3">&hearts;</div>
+					<div class="rating-x"	id="rating4">&hearts;</div>
+					<div class="rating-x"	id="rating5">&hearts;</div>
+				</div>
 			</div>
-		</div>
-		<div id="nothanks">
-			<a href="#" id="button" class="button-style">no thanks</a>
+			<div id="nothanks">
+				<a href="#" id="button" class="button-style">no thanks</a>
+			</div>
 		</div>
 	</div>
 </div>
 <script>
-/*
 if (self.port === undefined) {
-	u = "./packed-question.js";
+	console.log("loading packed");
+	var u = "./packed-question.js";
 	var s = document.createElement('script');
 	s.setAttribute('src', u);
 	document.head.appendChild(s);
-}*/
+}
 </script>
 
 </body>

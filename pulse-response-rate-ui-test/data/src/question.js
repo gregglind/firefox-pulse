@@ -14,7 +14,13 @@
 
 console.log("question.js");
 
+
 var $ = require("jquery");
+var jQuery = $;
+
+var rateit = require("./thirdparty/rateit/src/jquery.rateit.js");
+var rateit_css = require("./thirdparty/rateit/src/rateit.css");
+
 
 var symbols = "★☆✩♡♥️";
 

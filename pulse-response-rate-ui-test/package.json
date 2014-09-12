@@ -10,5 +10,6 @@
     "version": "0.0.1",
     "main": "lib/index.js",
     "id": "pulse-response-rate-ui-test@testpilot.mozilla.com",
-    "name": "pulse-response-rate-ui-test"
+    "name": "pulse-response-rate-ui-test",
+    "icon": "data/icons/icon-b.png"
 }

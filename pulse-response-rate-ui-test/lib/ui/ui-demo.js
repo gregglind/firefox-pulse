@@ -18,8 +18,11 @@ const data = require("sdk/self").data;
 
 const pageMod = require("sdk/page-mod");
 
+let Q = require("arms").questions[0];
+let flowid = 1234;
+
 let P = pageMod.PageMod({
-  include: data.url("uitest.html"),
+  include: data.url("ui-demo.html"),
   //include: /.*uitest.html/,
   contentScriptFile: data.url('packed-uitest.js'),
   contentScriptOptions: {
@@ -28,8 +31,7 @@ let P = pageMod.PageMod({
   onAttach: function(worker) {
     worker.port.on("ui", function (which) {
       console.log("which ui:", which);
-      ui.panel_big().go();
-      //ui[which]().show();
+      ui[which](Q, flowid).go(); // like a fake arm
     });
   }
 });

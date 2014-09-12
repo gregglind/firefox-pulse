@@ -29,7 +29,7 @@ const uiutils = require("ui/ui-utils");
 
 console.log("ui overall library");
 
-let fake = () => {};
+let fake = () => {go: ()=>console.log("fake!"); };
 
 // curry the few variable things
 let metapanel = function(overrides) {
@@ -137,7 +137,7 @@ exports.panel_big = (Q, flowid) => {
 exports.panel_small = (Q, flowid) => {
   return (metapanel({
     width: 450,
-    height: 300,
+    height: 250,
     anchor_fn: anchor
   })(Q, flowid));
 };

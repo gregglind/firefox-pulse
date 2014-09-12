@@ -27,11 +27,11 @@ let main = exports.main = function (options, callback) {
   options = options.staticArgs || {};
 
   if (options.showui) {
-    require("./ui/uitest");
+    require("./ui/ui-demo");
     let tabs = require("sdk/tabs");
-    tabs.open(self.data.url(""));
-    tabs.open(self.data.url("uitest.html"));
-    tabs.open(self.data.url("question.html"));
+    //tabs.open(self.data.url(""));
+    tabs.open(self.data.url("ui-demo.html"));
+    //tabs.open(self.data.url("question.html"));
   }
 
   if (options.reset) {

@@ -10,7 +10,7 @@ module.exports = {
 	//context: __dirname + "/app",
 	entry: {
 		question: "./src/question",
-        uitest:  "./src/uitest"
+        uitest:  "./src/ui-demos"
 		//Doorhanger2: "./src/entry2",
 	},
 	output: {

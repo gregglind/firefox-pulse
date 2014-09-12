@@ -54,7 +54,7 @@ let chooseArm = exports.chooseArm = function (rng, arms) {
 // widget, question, interruption, all combos
 
 // interruptions take callbacks.
-let interruptions = [
+const interruptions = exports.interruptions = [
   {alias: 'after_a_while',
    fn:  (cb) => triggers.after_a_while(cb, 200 /*5*60*1000 /*5min*/)
   },
@@ -64,7 +64,7 @@ let interruptions = [
 ];
 
 // question params
-let questions = [
+const questions = exports.questions = [
   {question: "Rate Firefox",
    outof: 5,
    alias: 'rate-firefox'
@@ -80,7 +80,7 @@ let questions = [
 ];
 
 // take (question, flowid) as params
-let widgets = [
+const widgets = exports.widgets = [
   {alias:'panel_big',
    fn:  (Q, flowid) => {
     return ui.panel_big(Q, flowid);

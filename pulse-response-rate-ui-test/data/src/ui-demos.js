@@ -9,6 +9,7 @@ if (self.port === undefined) {
 
 // dev garbage
 if (self.options === undefined) {
+  console.log("using fake ui");
   self.options = {
     ui: [
       "panel_big",
@@ -25,15 +26,23 @@ if (self.options === undefined) {
 
 (function () {
   self.options.ui.forEach(function (k, ii) {
-    var $div = $('<div />').
+    var $li = $('<li />').
+      addClass("ui-option").
       attr("id", k).
-      css("border", '2px solid red').
       text(k);
-    $div.click(function (evt) {
+    $li.click(function (evt) {
       var id = evt.target.id;
       self.port.emit("ui", id);
     });
-    $('body').append($div);
+    $li.hover(
+      function(){  // in
+        $(this).addClass('hover');
+      },
+      function(){  // out
+        $(this).removeClass('hover');
+      }
+    );
+    $('#demos').append($li);
   });
 
 })();

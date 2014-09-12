@@ -3,77 +3,142 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 <!DOCTYPE HTML>
 
-<html>
+<html lang="en">
 <head>
+  <title>After</title>
+  <link rel=stylesheet href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" type="text/css" media=screen />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" /></script>
   <style>
 
-    /* mostly from https://github.com/johngruen/project-dfa/tree/master/src */
-  body {
-    color: #333333;
-    font-family: 'clear_sansregular'; }
 
-  /*=====MINIMAL RESETS, ADJUSTMENTS, ETC =====*/
-  h1, h2, h3, h4, h5, h6 {
-    color: #424f5a;
-  }
+.question {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 36px;
+  height: 150px;
+}
 
-  h1, h2, h3 {
-    /*padding-bottom:20px;
-    margin-bottom: 1em;*/ }
+a:hover {
+  text-decoration: none;
+}
 
-
-  h4, h5, h6 {
-    margin-bottom: 1.66em; }
-
-  h1, h2 {
-    font-family: 'fira_sanslight'; }
-
-  h3, h4, h5, h6 {
-    font-family: 'clear_sansregular'; }
-
-  ul, ol, p {
-    line-height: 20px;
-    margin: .5em 0 0em 0;
-  }
-
-  /* specific heights we like */
-
-  h1 {
-    font-size:20px;
-  }
-
-  p {
-    font-size:16px;
-  }
+.hover {
+  background-color: gray;
+  color: white;
+}
+/*    /* mostly from https://github.com/johngruen/project-dfa/tree/master//*src */
+/*  body {
+/*    color: #333333;
+/*    font-family: 'clear_sansregular'; }
+/*
+/*  /*=====MINIMAL RESETS, ADJUSTMENTS, ETC =====*/
+/*  h1, h2, h3, h4, h5, h6 {
+/*    color: #424f5a;
+/*  }
+/*
+/*  h1, h2, h3 {
+/*    /*padding-bottom:20px;
+/*    margin-bottom: 1em;*/ }
+/*
+/*
+/*  h4, h5, h6 {
+/*    margin-bottom: 1.66em; }
+/*
+/*  h1, h2 {
+/*    font-family: 'fira_sanslight'; }
+/*
+/*  h3, h4, h5, h6 {
+/*    font-family: 'clear_sansregular'; }
+/*
+/*  ul, ol, p {
+/*    line-height: 20px;
+/*    margin: .5em 0 0em 0;
+/*  }
+/*
+/*  /* specific heights we like */
+/*
+/*  h1 {
+/*    font-size:20px;
+/*  }
+/*
+/*  p {
+/*    font-size:16px;
+/*  }
+*/
   </style>
 </head>
 <body>
-  <h1>Do More</h1>
-  <div>
-  <h2>Problems</h2>
-  <ul>
-    <li><a href="a">Search Is Broken</a></li>
-    <li><a href="a">Wrong Homepage</a></li>
-    <li><a href="a">Remove a toolbar</a></li>
-    <li><a href="a">Video problems</a></li>
-    <li><a href="a">Other problems</a></li>
+  <div class="row .container-xs-height">
+    <div class="col-md-8 .container-xs-height">
+      <div class="panel panel-danger  .container-xs-height">
+        <div class="panel-heading">
+            <h3 class="panel-title">Fix Firefox</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a id="link-search" href="https://support.mozilla.org/en-US/kb/searches-take-you-to-wrong-search-website">Search Is Broken</a></div>
+            </div>
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a href="https://support.mozilla.org/en-US/products/firefox/fix-problems/slowness-or-hanging" id="link-slow">Firefox is slow</a></div>
+            </div>
 
-  </ul>
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a href="https://support.mozilla.org/en-US/kb/remove-toolbar-has-taken-over-your-firefox-search">Remove a toolbar</a></div>
+            </div>
+
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a id="link-video" href="https://support.mozilla.org/en-US/products/firefox/fix-problems/videos-sound-pictures-and-animations-dont-work">Video problems</a></div>
+            </div>
+
+            <!--
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a id "link-wrong-homepage" href="a">Homepage is wrong</a></div>-->
+            <div class="col-md-4 question-wrapper">
+              <div class="panel-danger question"><a id="link-other" href="https://support.mozilla.org/en-US/products/firefox">Other Problems</a></div>
+            </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-md-4 .container-xs-height">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Like Firefox</h3>
+        </div>
+        <div class="panel-body">
+          <a id="link-support" href="#">
+            <h3>click to support firefox!</h3>
+            <img src="./icons/firefox-highres.png" width=192 height=192/>
+          </a>
+        </div>
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Go To Feedback</h3>
+        </div>
+        <div class="panel-body">
+          <p><a href="https://input.mozilla.org/en-US/feedback">Feedback!</a></p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div>
-  <h2>Like Firefox</h2>
-  <p><a href="">I love firefox</a></p>
-  </div>
-
-  <div>
-  <h2>Go To Feedback</h2>
-  <p><a href="feedback">Feedback!</a></p>
-  </div>
-
-
+<script>
+$(function () {
+  $('.question').hover(
+    function(){  // in
+      $(this).addClass('hover');
+    },
+    function(){  // out
+      $(this).removeClass('hover');
+    }
+  );
+})
+</script>
 </body>
-
-
 
 </html>

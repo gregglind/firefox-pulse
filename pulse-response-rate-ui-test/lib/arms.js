@@ -78,12 +78,12 @@ const questions = exports.questions = [
    outof: 5,
    alias: 'rate-firefox'
   },
-  {question: "Would you recommend?",
-    outof: 3,
+  {question: "How likely are you to choose Firefox over other browsers in the future?",
+    outof: 5,
     alias: 'recommend'
   },
-  {question: "Are you satisfied?",
-    outof: 7,
+  {question: "Rate your experience with Firefox over the past few weeks",
+    outof: 5,
     alias: 'satisfied'
   }
 ];

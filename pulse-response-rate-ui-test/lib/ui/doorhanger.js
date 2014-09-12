@@ -113,7 +113,10 @@ let questionAsPage = exports.questionAsPage = (cso) => {
     }
   };
   // cso will have Q, flowid, etc
-  let options = extend({}, panelDefaults, these, cso);
+  let options = extend({},
+      panelDefaults,
+      these,
+      {contentScriptOptions: cso});
   let P = pageMod.PageMod(options);
   return P;
 };

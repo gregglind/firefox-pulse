@@ -18,6 +18,7 @@ const data = require("sdk/self").data;
 
 const pageMod = require("sdk/page-mod");
 
+let arms = require("arms");
 let Q = require("arms").questions[0];
 let flowid = 1234;
 
@@ -26,12 +27,13 @@ let P = pageMod.PageMod({
   //include: /.*uitest.html/,
   contentScriptFile: data.url('packed-uitest.js'),
   contentScriptOptions: {
-    ui: Object.keys(ui).sort()
+    ui: Object.keys(ui).sort(),
+    questions:  arms.questions
   },
   onAttach: function(worker) {
-    worker.port.on("ui", function (which) {
-      console.log("which ui:", which);
-      ui[which](Q, flowid).go(); // like a fake arm
+    worker.port.on("ui", function (which, q) {
+      console.log("which ui:", which, q);
+      ui[which](q, flowid).go(); // like a fake arm
     });
   }
 });

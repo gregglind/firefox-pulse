@@ -28,20 +28,32 @@ const validNumber = { is: ['number', 'undefined', 'null'] };
 
 
 
+
 // https://developer.mozilla.org/en/XUL/notificationbox#Notification_box_events
 // bottom:  http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser-data-submission-info-bar.js
 /** expose the notification box (banner) for a window */
 var notificationbox = exports.notificationbox = function (w, bottom){
+  // TODO, this is SO MESSED UP.  GRL doesn't get xul vs most
+  // recent vs whatever.
   w = w || getMostRecentBrowserWindow();
-  let thistab = w.gBrowser.mCurrrentBrowser;
+  //let thistab = w.gBrowser.mCurrrentBrowser; // undefined?
   if (bottom) {
+    w = w || getMostRecentBrowserWindow();
     let nb = w.gDataNotificationInfoBar._notificationBox;
     console.log(nb);
     return nb;
+  } else {
+    var wm = chrome.Cc["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(chrome.Ci.nsIWindowMediator);
+    var win = wm.getMostRecentWindow("navigator:browser");
+    //return win.document.getElementById("global-notificationbox"); // bottom
+    let nb = win.document.getElementById("high-priority-global-notificationbox");
+    if (nb) return nb // 33+?
+    else {
+      return win.gBrowser.getNotificationBox();
+    }
   }
-  return w.gBrowser.getNotificationBox(thistab);
 };
-
 
 /* callback should register on AlertShow, AlertClose, TODO!
 

@@ -16,6 +16,8 @@ var self = require('sdk/self');
 
 const experiment = require("experiment");
 const phonehome = require("phonehome");
+const arms = require("arms");
+
 
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
@@ -45,6 +47,12 @@ let main = exports.main = function (options, callback) {
   if (options.testing !== undefined) {
     phonehome.config.testing = options.testing;  // default: true
   }
+
+  if (options.delay !== undefined) {
+    arms.config.delay = options.delay;  // default: true
+    arms.regenerate();
+  }
+
 
   let armnumber; // undef;
 

@@ -33,6 +33,10 @@ const { defer, resolve } = promises;
 
 const { uu } = require('utils');
 
+const config = exports.config = {
+  delay: 5*60*1000  /* 5 min */
+};
+
 let randint = function(l, r) {
   if (r === undefined) {
     r = l;
@@ -42,7 +46,7 @@ let randint = function(l, r) {
 };
 
 let chooseArm = exports.chooseArm = function (rng, arms) {
-  if (arms === undefined) arms = ARMS;
+  if (arms === undefined) arms = ARMS();
   if (rng === undefined) rng = randint(arms.length);
   console.log(rng);
   let arm = arms[rng];
@@ -56,7 +60,7 @@ let chooseArm = exports.chooseArm = function (rng, arms) {
 // interruptions take callbacks.
 const interruptions = exports.interruptions = [
   {alias: 'after_a_while',
-   fn:  (cb) => triggers.after_a_while(cb, 200 /*5*60*1000 /*5min*/)
+   fn:  (cb) => triggers.after_a_while(cb, config.delay)
   },
   {alias: 'newtab',
    fn: triggers.newtab
@@ -145,11 +149,21 @@ let generate_arms = function () {
   return out;
 };
 
+// gross little getter
+let _arms;
+let ARMS = exports.ARMS = () => _arms;
 
-/* list of objs of {name: jsonable, factory? } */
-const ARMS = exports.ARMS = generate_arms();
+/** regenerate all arms.  useful for debug.
+  *
+  */
+let regenerate = exports.regenerate = function () {
+  _arms = generate_arms();
+  console.log(config);
+  console.log(JSON.stringify(ARMS().map((k, ii)=>ii +' ' + k.name),null,2));
+};
 
-console.log(JSON.stringify(ARMS.map((k, ii)=>ii +' ' + k.name),null,2));
+regenerate();
+
 
 // const ARMS = exports.ARMS = [
 //   {name: "after_a_while:unanchored-panel:how-you-doing",

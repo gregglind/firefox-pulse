@@ -35,11 +35,11 @@ exports['test changeArm changes arm'] = function(assert) {
     seen[i] = 1;
   };
   let o = experiment.observer.on("set-arm", fn);
-  arms.ARMS.forEach( (el, i) => {
+  arms.ARMS().forEach( (el, i) => {
     experiment.setupArm(i); // should trigger set-arm
   });
   experiment.observer.off('set-arm', o);
-  assert.equal(sum(seen), arms.ARMS.length, "all arms seen");
+  assert.equal(sum(seen), arms.ARMS().length, "all arms seen");
 };
 
 exports['test experiment everyRun starts a flow'] = function(assert, done) {

@@ -52,6 +52,11 @@ let rememberArm = function (data) {
   // other stuff on history, arm stuff?
 };
 
+let revive = exports.revive = function () {
+  let armnumber = myprefs.armnumber;
+  setupArm(armnumber);
+}
+
 /* useful in cases where we know the armno, but not the armdata */
 let setupArm = exports.setupArm = function (armnumber) {
   let arm = myarm = arms.chooseArm(armnumber);

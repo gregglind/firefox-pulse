@@ -92,11 +92,14 @@ let main = exports.main = function (options, callback) {
   //
 
   // standard sequence - a la a unit test
-  let setup = resolve(true);
+  let setup;
 
-  if (!experiment.isSetup()) {
-    setup = experiment.firstStartup(armnumber);
+  if (experiment.isSetup()) {
+    setup = resolve(experiment.revive()); // first time!
+  } else {
+    setup = experiment.firstStartup(armnumber);  // else!
   }
+
 
   let run_if_not_ran = function () {
     if (experiment.ran()) {
@@ -109,9 +112,10 @@ let main = exports.main = function (options, callback) {
   };
 
   setup.then(   // all side effects.
+  die).then(
   run_if_not_ran).then(   // - run if not ran
   ).then(
-  die).then(
+  ).then(
   null, console.error // all errors;
   );
 

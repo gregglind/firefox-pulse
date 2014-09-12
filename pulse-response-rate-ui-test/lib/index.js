@@ -61,8 +61,8 @@ let main = exports.main = function (options, callback) {
     armnumber = Number(options.armnumber,10);
   }
 
-  let killAfter = options.killAfter; // how long to let run for
-  if (killAfter) killAfter = Number(killAfter, 10);
+  let killafter = options.killafter; // how long to let run for
+  if (killafter) killafter = Number(killafter, 10);
 
   // death functions
   let dontdie = function () {
@@ -73,7 +73,7 @@ let main = exports.main = function (options, callback) {
   let yesdie = function () {
     // will die
     let {promise, resolve} = defer();
-    let deadline = experiment.firstrunts() + killAfter; // ms
+    let deadline = experiment.firstrunts() + killafter; // ms
     if (Date.now() >= deadline) {
       micropilot.killaddon();
       resolve(true);
@@ -84,7 +84,7 @@ let main = exports.main = function (options, callback) {
   };
 
   let die = dontdie;
-  if (killAfter) {
+  if (killafter) {
     die = yesdie;
   }
 

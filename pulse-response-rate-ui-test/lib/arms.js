@@ -22,14 +22,19 @@
 // element
 // question
 
+
+let { emit } = require('sdk/event/core');
+
+const promises = require("sdk/core/promise");
+const { defer, resolve } = promises;
+
 const ui = require("./ui");
 console.log(Object.keys(ui));
 
 const triggers = require("./triggers");
 const { phonehome } = require("./phonehome");  // this is a gross dep
+const experiment = require("experiment");
 
-const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
 
 const { uu } = require('utils');
 
@@ -128,6 +133,9 @@ let gen_arm = exports.gen_arm = function (I, Q, W) {
       I.fn(() => { // triggers, all are callback
       phonehome({flowid:flowid, msg: "flow-triggered"});
         console.log("flow: innteruption complete");
+        // notify the experient we are done.
+        emit(experiment.observer, "ran");
+
         W.fn(Q, flowid).go(); // widget fires, as param'ed by Question
       });
     });

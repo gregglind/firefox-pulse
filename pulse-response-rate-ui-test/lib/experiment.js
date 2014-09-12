@@ -41,6 +41,10 @@ let myarm;
   */
 let observer = exports.observer = EventTarget();
 
+observer.on("ran", function () {
+  myprefs.ran = true;
+});
+
 let rememberArm = function (data) {
   myarm = data;
   myprefs.armnumber = data.number;
@@ -60,6 +64,14 @@ let setupArm = exports.setupArm = function (armnumber) {
   */
 let isSetup = exports.isSetup = function () {
   return myprefs.configured === true;
+};
+
+let firstrunts = exports.firstrun = function () {
+  return Number(myprefs.firstrun, 10);
+};
+
+let ran = exports.ran = function () {
+  return myprefs.ran;
 };
 
 let firstStartup = exports.firstStartup = function (armnumber) {

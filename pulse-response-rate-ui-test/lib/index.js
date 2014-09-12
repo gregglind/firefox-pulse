@@ -17,7 +17,7 @@ var self = require('sdk/self');
 const experiment = require("experiment");
 const phonehome = require("phonehome");
 const arms = require("arms");
-
+const micropilot = require("micropilot-trimmed");
 
 const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
@@ -61,6 +61,35 @@ let main = exports.main = function (options, callback) {
     armnumber = Number(options.armnumber,10);
   }
 
+  let killAfter = options.killAfter; // how long to let run for
+  if (killAfter) killAfter = Number(killAfter, 10);
+
+  // death functions
+  let dontdie = function () {
+    console.log("run indefinitely");
+    return resolve(false); // don't die!
+  };
+
+  let yesdie = function () {
+    // will die
+    let {promise, resolve} = defer();
+    let deadline = experiment.firstrunts() + killAfter; // ms
+    if (Date.now() >= deadline) {
+      micropilot.killaddon();
+      resolve(true);
+    } else {
+      resolve(false);
+    }
+    return promise();
+  };
+
+  let die = dontdie;
+  if (killAfter) {
+    die = yesdie;
+  }
+
+
+
   // upgrades
   //
 
@@ -71,10 +100,20 @@ let main = exports.main = function (options, callback) {
     setup = experiment.firstStartup(armnumber);
   }
 
+  let run_if_not_ran = function () {
+    if (experiment.ran()) {
+      console.log("already ran");
+      resolve(true);
+    } else {
+      console.log("will run");
+      return experiment.everyRun();
+    }
+  };
+
   setup.then(   // all side effects.
-  experiment.everyRun).then(   // - run
-  //resolve(() => console.log('running'))
+  run_if_not_ran).then(   // - run if not ran
   ).then(
+  die).then(
   null, console.error // all errors;
   );
 

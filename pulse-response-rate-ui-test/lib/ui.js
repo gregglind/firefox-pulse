@@ -18,6 +18,7 @@ const tabs = require("sdk/tabs");
 const dh = require("ui/doorhanger");
 const notification = require("ui/notification");
 const { anchor } = require("ui/anchor");
+const about_newtab = require("ui/about_newtab");
 
 const { phonehome } = require("phonehome");
 const utils = require("utils");
@@ -183,7 +184,25 @@ exports.background_tab = (Q, flowid) => {
 };
 
 
-exports.about_newtab_mod = fake;
+exports.about_newtab_mod = (Q, flowid) => {
+  Q = Q || {};
+  let cto = extend(
+    {},
+    dh.defaultSctiptOptions,
+    Q,
+    {flowid: flowid}
+  );
+  let P = about_newtab.questionOnNewTab(cto);
+  return ({
+    widget: P,
+    go: function () {
+      tabs.open({
+        url: "about:newtab",
+        inBackground: true,
+      });
+    }
+  });
+};
 
 
 // interruption contexts.

@@ -18,6 +18,8 @@ const request = require("sdk/request");
 const { extend } = require("sdk/util/object");
 const myprefs = require("sdk/simple-prefs").prefs;
 
+const personinfo = require("personinfo");
+
 /** add common fields such as timestamp, userid, etc. to event data
   * fields will be appending in newkey 'extra', which is a dict.
   *
@@ -26,6 +28,7 @@ const myprefs = require("sdk/simple-prefs").prefs;
   *
   */
 let annotate = exports.annotate = function (obj) {
+  let { promise, resolve } = defer();
   // experiment arm?
   // etc!
   // addon version?
@@ -36,10 +39,16 @@ let annotate = exports.annotate = function (obj) {
   ['person', 'armnumber', 'armname', 'firstrun'].forEach(
     (k) => obj.extra[k] = myprefs[k]
   );
-
   //
   obj.extra.ts = Date.now();
-  return obj;
+
+  personinfo.getData().then(
+    function (data) {
+      obj.extra = extend({}, obj.extra, data);
+      resolve(obj);
+    }
+  );
+  return promise;
 };
 
 
@@ -85,39 +94,49 @@ let phonehome = exports.phonehome = function(dataObject, options){
     cb();
   }
 
-  if (options.annotate) {
-    dataObject = annotate(dataObject);
-  }
-
   if (options.testing) {
     dataObject.testing = true;
   }
 
-  /** TP packet
-    * - special url
-    * - POST instead of get
-    * - explicit about content type.
-    * - will autogen a record at /bagheera end
-    */
-  var XMLReqTP = new request.Request({
-    url: options.url,
-    headers: {},
-    onComplete: requestCompleted.bind(null,"TP", resolve),
-    content: JSON.stringify(dataObject),
-    contentType: "application/json",
-  });
+  let send = function (dataObject) {
+    /** TP packet
+      * - special url
+      * - POST instead of get
+      * - explicit about content type.
+      * - will autogen a record at /bagheera end
+      */
+    var XMLReqTP = new request.Request({
+      url: options.url,
+      headers: {},
+      onComplete: requestCompleted.bind(null,"TP", resolve),
+      content: JSON.stringify(dataObject),
+      contentType: "application/json",
+    });
 
-  console.log("TP REQUESTS");
-  console.log(JSON.stringify(dataObject,null,2));
+    console.log("TP REQUESTS");
+    console.log(JSON.stringify(dataObject,null,2));
 
-  if (options.phonehome) {
-    console.log("posting");
-    XMLReqTP.post();
+    if (options.phonehome) {
+      console.log("posting");
+      XMLReqTP.post();
 
+    } else {
+      console.log("phonehome, blocked by configuration");
+      resolve(XMLReqTP); /* return the request, won't have status */
+    }
+  };
+
+  // this becomes a promise.
+  if (options.annotate) {
+    dataObject = annotate(dataObject);
   } else {
-    console.log("phonehome, blocked by configuration");
-    resolve(XMLReqTP); /* return the request, won't have status */
+    dataObject = promises.resolve(dataObject);
   }
+
+  dataObject.then(send).then(
+    null,
+    console.error);
+
   return promise;
 
 };

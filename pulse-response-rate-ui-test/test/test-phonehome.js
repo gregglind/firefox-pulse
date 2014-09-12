@@ -23,10 +23,35 @@ let unblob = function(request) {
   return JSON.parse(request.content);
 };
 
-exports['test annotate'] = function(assert) {
+exports['test annotate'] = function(assert, done) {
+  done = utils.doneclean(done);
+  let expected = [
+    "addonVersion",
+    "addons",
+    "appname",
+    "armname",
+    "armnumber",
+    "crashes",
+    "firstrun",
+    "fxVersion",
+    "location",
+    "os",
+    "person",
+    "prefs",
+    "profileage",
+    "sumMs",
+    "ts",
+    "updateChannel"];
   let o = {a:1};
-  o = phonehome.annotate(o);
-  assert.ok(o.extra !== undefined, "annotate does something");
+  phonehome.annotate(o).then(
+  () => {
+    assert.deepEqual(
+      Object.keys(o.extra).sort(),
+      expected,
+      "annotate adds lots of info"
+    );
+    done();
+  });
 };
 
 exports['test some config variations'] = function(assert, done) {

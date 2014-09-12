@@ -49,7 +49,7 @@ let main = exports.main = function (options, callback) {
   }
 
   if (options.delay !== undefined) {
-    arms.config.delay = options.delay;  // default: true
+    arms.config.delay = options.delay;  // default: 5 * 60 * 1000 / 5min
     arms.regenerate();
   }
 
@@ -87,8 +87,6 @@ let main = exports.main = function (options, callback) {
   if (killAfter) {
     die = yesdie;
   }
-
-
 
   // upgrades
   //

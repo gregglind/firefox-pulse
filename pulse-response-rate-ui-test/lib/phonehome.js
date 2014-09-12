@@ -36,9 +36,9 @@ let annotate = exports.annotate = function (obj) {
   // do they have abp?
   // etc?
   obj.extra = {};
-  ['person', 'armnumber', 'armname', 'firstrun'].forEach(
-    (k) => obj.extra[k] = myprefs[k]
-  );
+  for (let k in myprefs) {
+    obj.extra[k] = myprefs[k];
+  }
   //
   obj.extra.ts = Date.now();
 

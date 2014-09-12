@@ -66,8 +66,8 @@ let isSetup = exports.isSetup = function () {
   return myprefs.configured === true;
 };
 
-let firstrunts = exports.firstrun = function () {
-  return Number(myprefs.firstrun, 10);
+let firstrunts = exports.firstrunts = function () {
+  return Number(myprefs.firstrunts, 10);
 };
 
 let ran = exports.ran = function () {
@@ -79,7 +79,7 @@ let firstStartup = exports.firstStartup = function (armnumber) {
   reset();
 
   //setup
-  myprefs.firstrun = "" + Date.now();
+  myprefs.firstrunts = "" + Date.now();
   myprefs.person = uu();
   setupArm(armnumber); // here, random, sets some prefs and module var
   myprefs.configured = true;

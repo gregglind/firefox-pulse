@@ -19,6 +19,10 @@ let utils = require('./utils-for-testing');
 
 let phonehome = require("phonehome");
 
+let experiment = require('experiment');
+let triggers = require("triggers");
+
+
 let unblob = function(request) {
   return JSON.parse(request.content);
 };
@@ -31,8 +35,9 @@ exports['test annotate'] = function(assert, done) {
     "appname",
     "armname",
     "armnumber",
+    "configured",
     "crashes",
-    "firstrun",
+    "firstrunts",
     "fxVersion",
     "location",
     "os",
@@ -41,15 +46,22 @@ exports['test annotate'] = function(assert, done) {
     "profileage",
     "sumMs",
     "ts",
-    "updateChannel"];
+    "updateChannel"
+  ];
   let o = {a:1};
-  phonehome.annotate(o).then(
+
+  // need to set up prefs!
+  experiment.firstStartup().then(
+  triggers.reset
+  ).then(
+  () => phonehome.annotate(o)).then(
   () => {
     assert.deepEqual(
       Object.keys(o.extra).sort(),
       expected,
       "annotate adds lots of info"
     );
+    experiment.reset(); // cleanup!
     done();
   });
 };

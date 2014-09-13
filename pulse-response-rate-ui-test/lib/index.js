@@ -80,7 +80,7 @@ let main = exports.main = function (options, callback) {
     } else {
       resolve(false);
     }
-    return promise();
+    return promise;
   };
 
   let die = dontdie;

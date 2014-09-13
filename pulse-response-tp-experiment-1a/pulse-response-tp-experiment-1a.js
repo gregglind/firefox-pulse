@@ -29,7 +29,7 @@ let {AddonManager, Services} = modules;
 exports.experimentInfo = {
   testId: "pulse-response-rate-ui-test-testpilot.xpi",
   testName: "Pulse Response Rate UI Test",
-  testInfoUrl: "https://testpilot.mozillalabs.com/testcases/pulse-response-to-experiment-1a/README.html", //CHANGE TO INFO PAGE
+  testInfoUrl: "https://testpilot.mozillalabs.com/testcases/pulse-response-tp-experiment-1a/README.html", //CHANGE TO INFO PAGE
   summary: "UI Variations for Collecting Feedbac",
   versionNumber: 1,
   duration: 1, //CHANGE TO NUMBER OF DESIRED DAYS

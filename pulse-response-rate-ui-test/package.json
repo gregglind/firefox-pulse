@@ -7,7 +7,7 @@
     "author": "Gregg Lind <glind@mozilla.com>",
     "title": "Firefox Pulse Response Rate Test (Test Pilot)",
     "homepage": "https://github.com/gregglind/firefox-pulse",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "lib/index.js",
     "id": "pulse-response-rate-ui-test@testpilot.mozilla.com",
     "name": "pulse-response-rate-ui-test",

@@ -65,6 +65,7 @@ if (typeof self.options === 'undefined') {
         console.log("on",evt.target.id);
         var id = evt.target.id;
         var n = /rating\-(.*)/.exec(id)[1];
+        var packet = $.extend(true, self.port.options, {rating: n});
         n = Number(n,10);
         setStars(n);
         if (self===undefined) {
@@ -76,13 +77,9 @@ if (typeof self.options === 'undefined') {
             console.log(Object.keys(self.port));
           }
         }
-        self.port.emit('rate', {rating: n,
-          outof: self.options.outof,
-          question: self.options.question,
-          flowid: self.options.flowid
-        });
+        self.port.emit('rate', packet);
         self.port.emit("close");
-        self.port.emit("open-afterpage", self.options.flowid);
+        self.port.emit("open-afterpage", packet);
       });
 
       $("#rating").append($div);

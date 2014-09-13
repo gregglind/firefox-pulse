@@ -16,18 +16,18 @@ const tabs = require("sdk/tabs");
 const self = require("sdk/self");
 
 const utils = require("utils");
+const afterpage = require("./after-page");
 
 exports.openAfterPage = function (data) {
   // eegh, how to get the page mode open with the right stuff?
-
   utils.wait(500).then(() => {
-    // make the pageMod with OUR data.
+    // make the pageMod with OUR data.  Risk that
+    let P = afterpage.factory(data);
     tabs.open({
       url: self.data.url("after.html"),
       inBackground: true
     });
-  })
-
+  });
 };
 
 

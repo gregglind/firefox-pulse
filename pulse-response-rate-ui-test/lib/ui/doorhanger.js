@@ -68,9 +68,9 @@ let msgPanel = exports.msgPanel = function (options) {
     })
 
   });
-  P.port.on("open-afterpage", function () {
+  P.port.on("open-afterpage", function (info) {
     console.log("got open-afterpage");
-    uiutils.openAfterPage(); // with some data?
+    uiutils.openAfterPage(info); // with rating and config
   });
   P.port.on("rate", function (info) {
     console.log("got a rating, should phone home");

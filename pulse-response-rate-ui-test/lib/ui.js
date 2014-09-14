@@ -108,7 +108,7 @@ let metanotification = function (overrides) {
     let P = notification.banner({
       msg: Q.question,
       id: null,
-      icon: null, //"chrome://global/skin/icons/question-large.png",
+      icon: "chrome://global/skin/icons/question-large.png",
       priority: null,
       buttons: buttons,
       callback: null,

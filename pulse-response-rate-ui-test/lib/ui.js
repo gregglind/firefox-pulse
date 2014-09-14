@@ -71,13 +71,14 @@ let metanotification = function (overrides) {
     // make buttons.
     let buttons= [];
     for (let ii=1; ii <= Q.outof; ii++) {
-      let b = notification.nbButtons[ii]({
+      let jj = ii;
+      let b = notification.nbButtons[jj]({
         callback: function(nb, b) {
-          console.log('nb rated', ii);
+          console.log('nb rated', jj);
           let info = extend({},
             Q,
             {
-              rating: ii,
+              rating: jj,
               flowid: flowid,
               msg: 'flow-ui-closed'
             });

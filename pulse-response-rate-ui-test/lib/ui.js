@@ -111,7 +111,15 @@ let metanotification = function (overrides) {
       icon: "chrome://global/skin/icons/question-large.png",
       priority: null,
       buttons: buttons,
-      callback: null,
+      callback: function () {  // cb on close!
+          let info = extend({},
+            Q,
+            {
+              flowid: flowid,
+              msg: 'flow-ui-closed'
+            });
+          phonehome(info);
+      },
       nb: nb
     });
 

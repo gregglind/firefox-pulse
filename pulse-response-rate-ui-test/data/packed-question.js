@@ -111,7 +111,7 @@
 	        console.log("on",evt.target.id);
 	        var id = evt.target.id;
 	        var n = /rating\-(.*)/.exec(id)[1];
-	        var packet = $.extend(true, self.port.options, {rating: n});
+	        var packet = $.extend(true, self.options, {rating: n});
 	        n = Number(n,10);
 	        setStars(n);
 	        if (self===undefined) {

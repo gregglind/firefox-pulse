@@ -30,6 +30,8 @@ try:
 except:
   import json
 
+import json as ojson
+
 # analysis
 
 
@@ -55,7 +57,8 @@ _sumup_fields = [
   # gotta do some things for the fouled scoring the bottom bar.
   # not sure best way to handle it.
   "ui_vote_adjusted_n",
-  "score_adjusted_n",
+  "score_sum_adjusted",
+  "score_sum_sq",
 
   "score",
   "outof",
@@ -74,8 +77,26 @@ def split_arm(armname):
 def packet_version(version):
   return tuple(map(int,version.split('.')))
 
-def is_weird_search(setting_string):
-  return "chrome" in setting_string or "google" in setting_string
+def search_provider(setting_string):
+  """ return (category, provider) """
+  s = setting_string.lower()
+  p = None
+  if "chrome" in s or "google" in s:
+    p = "google"
+  elif "yahoo" in s:
+    p = 'yahoo'
+  elif "duck" in s or "ddg" in s:
+    p = 'ddg'
+  elif "bing" in s:
+    p = "bing"
+  else:
+    p = "weird"
+
+  c = p
+  if p not in ('google', 'weird'):
+    c = 'other'
+
+  return (c, p)
 
 def has_abp(addons_list):
   if not addons_list:
@@ -97,24 +118,51 @@ def is_release(pref):
 
 
 def about(packet):
-  out = dict().fromkeys(_sumup_fields,0)
+  #out = dict().fromkeys(_sumup_fields,0)
+  out = dict()
   n =  split_arm(packet.get('armname', None) or packet['extra']['armname'])
 
   for k in n:
     out[k] = n[k]
 
   out['msg'] = packet.get('msg', None) or packet['extra'].get('msg', None) or ""
-
   out['version'] = packet_version(packet['extra'].get('addonVersion','0.0.0'))
+  out['versionstring'] = packet['extra'].get('addonVersion','0.0.0')
+
   out['abp'] = has_abp(packet['extra']['addons'])
-  out['weird_search_page'] = is_weird_search(packet['extra']['prefs']['browser.search.defaultenginename'])
-  out['windows'] = is_windows()  # TODO Forgot to collect
+  #out['windows'] = is_windows()  # TODO Forgot to collect
   out['release'] = is_release(packet['extra'].get('updateChannel',""))
-  out['link'] = packet.get('link','')
+
+  # fix 1.0.2 bug that missed 'link-feedback'
+  _link = ['','link-feedback'][out['msg']=="afterPage-link"]
+  out['link'] = packet.get('link',_link)
+  out['firstrunts'] = int(packet['extra'].get('firstrunts'))
+  out['ts'] = int(packet['extra'].get('ts'))
+
+  crashes = packet['extra'].get('crashes', None)
+  if crashes:
+    out['crashes'] = crashes
+    out['crashed'] = out['crashes']['total'] > 0
+
+  out['profileage'] = packet['extra']['profileage']
+  out['profile1month'] = out['profileage'] > 30
+  out['profile1year'] = out['profileage'] > 365
+
+  out['addons'] = packet['extra']['addons']
+
+  search = search_provider(packet['extra']['prefs']['browser.search.defaultenginename'])
+  out['search_provider'] = search[1]
+  out['search_cat'] = search[0]
+
   return out
 
 
-R = report_by_arm_counter = defaultdict(lambda: dict().fromkeys(_sumup_fields,0))
+def reported_default():
+  d = dict().fromkeys(_sumup_fields,0)
+  d['ratings'] = defaultdict(int)
+  return d
+
+R = report_by_arm_counter = defaultdict(reported_default)
 
 # filters on version?
 # filters on msg_type
@@ -150,14 +198,19 @@ def process(packet):
 
   # TODO, needs fixing for stuff in 1.0.4 tbd
   elif 'rating' in packet and msg in ["flow-ui-closed", ""]:
-    d['score'] += int(packet['rating'])
+    rating = int(packet['rating'])
+    d['score'] += rating
     d['ui_vote_n'] += 1
 
     # unless!  notifications from 1.0.2 shouldn't count
     if p['widget'].startswith("notification") and p['version'] < (1,0,3):
+      pass
       # nope
     else:
-      d['score_adjusted_n'] += int(packet['rating'])
+      d['score_sum_adjusted'] += rating
+      d['ratings'][rating] += 1
+
+      d['score_sum_sq'] += rating **2
       d['ui_vote_adjusted_n'] += 1
 
   elif msg in ["flow-ui-refused", "flow-ux-refused"]:
@@ -170,22 +223,50 @@ def process(packet):
   return True
 
 def print_report(R):
-  keys = ['w', 'c', 'q', '%vote', 'mean_score', 'n_voted', '%refuse', 'n_seen', 'engage:vote']
+  keys = ['w', 'c', 'q', '%vote', 'mean_score', 'error', 'n_voted', 'n_valid_votes', '%refuse', 'n_seen', 'engage:vote', '%3less-rating', '%5rating']
   print "\t".join(keys)
   for k, v in sorted(R.iteritems()):
+    mean_n = (v['ui_vote_adjusted_n'] or 1)
+    mean = v['score_sum_adjusted'] / mean_n
+    ss_mean = v['score_sum_sq'] - (v['score_sum_adjusted']**2 / mean_n)
+    sample_var_mean = ss_mean/((mean_n - 1) or .00000000001) # huge means undef
+    se_mean = (sample_var_mean / mean_n) ** .5
+
+    vote_or_reject = (sum(v['ratings'].values()) + v['ui_reject_n']) or 1
+    r3_or_less = v['ratings'][1] + v['ratings'][2] + v['ratings'][3] # ratings <= 3
     o = list(k)
     o.extend([
      "{0:4.02%}".format(v['ui_vote_n']
       / (v['ui_seen_n'] or 1)),
-     "{0:4.02f}".format(v['score_adjusted_n']
-      / (v['ui_vote_adjusted_n'] or 1)), # handle the zero case
+     "{0:4.02f}".format(mean), # handle the zero case
+     "{0:4.02f}".format(se_mean),
+     "{0:4.0f}".format(v['ui_vote_n']),
+     "{0:4.0f}".format(mean_n),
+
      "{0:4.02%}".format(v['ui_reject_n']
       / (v['ui_seen_n'] or 1)), # handle the zero case
       str(v['ui_seen_n']),
      "{0:5.02}".format(v['engage']
       / (v['ui_vote_n'] or 1)), # handle the zero case
+     "{0:4.0%}".format(r3_or_less / vote_or_reject), # handle the zero case
+     "{0:4.0%}".format(v['ratings'][5]/ vote_or_reject) # handle the zero case
     ])
     print "\t".join(o)
+
+
+def make_dataset(f,R):
+
+  ## TODO, longform dataset for csv
+  # (responded) = arm, rated, rating, abp, crashever
+  # (score) = arm, rated, rating, abp, crashever?
+  # engage?
+
+  with open(f,"w") as fh:
+    for (k, v) in R.iteritems:
+      row = list(k)
+      ## repeat lots?
+      for ii in row['started']:
+        pass
 
 
 if __name__ == "__main__":
@@ -199,16 +280,22 @@ if __name__ == "__main__":
       logging.exception(exc)
 
 
-  ## TODO, longform dataset for csv
-  # (responded) = arm, rated, rating, abp, crashever
-  # (score) = arm, rated, rating, abp, crashever?
-  # engage?
+  #for (k,v) in sorted(links.iteritems()):
+  #  print (k,v)
 
+  with open("report1.json", 'w') as fh:
+    n = dict()
+    n['links'] = links
+    n['report'] = dict()
 
-  for (k,v) in sorted(links.iteritems()):
-    print (k,v)
+    for (k,v) in sorted(R.iteritems()):
+      r = dict(v);
+      key = '$'.join(map(str,k))
+      r['widget'] = k[0]
+      r['context'] = k[1]
+      r['question'] = k[2]
+      n['report'][key] = r
 
-  for (k,v) in sorted(R.iteritems()):
-    print (k, v)
+    fh.write(ojson.dumps(n, indent=2))
 
   print_report(R)

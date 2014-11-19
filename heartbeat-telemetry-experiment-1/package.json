@@ -1,0 +1,15 @@
+{
+    "license": "MPL",
+    "description": "Test Pilot Study:  Variations in UI for determining response rate",
+    "engines": {
+        "firefox": ">=32.0a1"
+    },
+    "author": "Gregg Lind <glind@mozilla.com>",
+    "title": "Firefox Pulse Response Rate Test (Test Pilot)",
+    "homepage": "https://github.com/gregglind/firefox-pulse",
+    "version": "1.0.4",
+    "main": "lib/index.js",
+    "id": "pulse-response-rate-ui-test@testpilot.mozilla.com",
+    "name": "pulse-response-rate-ui-test",
+    "icon": "data/icons/icon-b.png"
+}

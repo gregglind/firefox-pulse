@@ -1,0 +1,130 @@
+<!-- * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta charset="utf-8">
+<title>Firefox Satisfaction</title>
+<link rel=stylesheet href="general.css" type="text/css" media=screen>
+
+<style type="text/css">
+/* positioning */
+	body {
+		padding: 0 0;
+		margin: 0 0;
+	}
+
+	.center-center {
+	  position: absolute;
+    transform: translateX(-50%)  translateY(-50%);
+    left: 50%;
+    top: 50%;
+	}
+
+	.center-x {
+	  position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+	}
+
+	.center-y {
+	  position: absolute;
+	  top: 50%;
+		transform: translateY(-50%);
+	}
+
+	#container {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+	}
+	#left {
+		position: absolute;
+		width: 84px;
+		height: 100%;
+		background-color: #EBECED
+	}
+	#icon {
+		position: absolute;
+		top: 50%;
+		width: 64px;
+		height: 64px;
+	}
+
+	#right {
+		position: absolute;
+		left: 84px;
+		padding: 0 16px;
+		height: 100%;
+
+	}
+
+/* star stuff! */
+#rating {
+	color:grey;
+}
+.rating-x {
+	float:left;
+    cursor: hand;
+    cursor: pointer;
+    font-size: 60px;
+    color: rgb(255, 126, 0);
+}
+
+/* http://stackoverflow.com/questions/1321692/how-to-specifiy-the-order-of-css-classes
+later IN CSS = later in cascade!
+*/
+.rating-on {
+	color: red;
+}
+
+#nothanks {
+	padding: 18px 0px;
+	clear: both;
+}
+
+</style>
+</head>
+
+<body>
+<div id="container">
+
+	<div id="left">
+			<img id="icon" class="center-center" src="./icons/firefox-highres.png" />
+	</div>
+
+	<div id="right">
+		<div id="questions" class="">
+			<h1 id="question">
+			how do you feel about firefox?
+			</h1>
+			<div id="rating">
+				<div class="rating-x" id="rating1">&hearts;</div>
+				<div class="rating-x"	id="rating2">&hearts;</div>
+				<div class="rating-x"	id="rating3">&hearts;</div>
+				<div class="rating-x"	id="rating4">&hearts;</div>
+				<div class="rating-x"	id="rating5">&hearts;</div>
+			</div>
+		</div>
+		<div id="nothanks">
+			<a href="#" id="button" class="button-style">no thanks</a>
+		</div>
+	</div>
+</div>
+<script>
+/*
+if (self.port === undefined) {
+	u = "./packed-question.js";
+	var s = document.createElement('script');
+	s.setAttribute('src', u);
+	document.head.appendChild(s);
+}*/
+</script>
+
+</body>
+
+</html>

@@ -9,17 +9,17 @@
 (per `lib/index.js`, `lib/experiment.js`, `lib/arms.js`)
 
 1. startup.
-  a. if 'has been long enough', self-uninstall.
-  b. if already ran experiment (through showing UI). QUIT.
+
+    a. if 'has been long enough', self-uninstall.
+    b. if already ran experiment (through showing UI). QUIT.
 
 2. If (first install), configure, else 'revive' saved config from prefs
 3. run experiment based on config.
 
-  a. set context trigger
-  b. trigger 'rating' ui
-  c. record vote (if any)
-  d. open instrumented engagement page
-
+    a. set context trigger
+    b. trigger 'rating' ui
+    c. record vote (if any)
+    d. open instrumented engagement page
 
 ## Files
 

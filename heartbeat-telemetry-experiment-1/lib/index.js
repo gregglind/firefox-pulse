@@ -8,43 +8,37 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global */
+/*global exports, require, console*/
 
 "use strict";
 
-var self = require('sdk/self');
+const promises = require("sdk/core/promise");
+const { defer, resolve } = promises;
+const self = require('sdk/self');
 
 const experiment = require("experiment");
 const phonehome = require("phonehome");
 const arms = require("arms");
 const micropilot = require("micropilot-trimmed");
 
-const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
-
 
 /**
-
-  allowed options
-  - showui
-  - reset
-  - phonehome
-  - testing
-  - delay
-*/
+  *
+  * allowed options
+  * - showui
+  * - reset
+  * - phonehome
+  * - testing
+  * - delay
+  */
 let main = exports.main = function (options, callback) {
 
-  console.log("running");
-  // args
   options = options.staticArgs || {};
-  console.log("passed options:", options);
 
   if (options.showui) {
     require("./ui/ui-demo");
     let tabs = require("sdk/tabs");
-    //tabs.open(self.data.url(""));
-    tabs.open(self.data.url("ui-demo.html"));
-    //tabs.open(self.data.url("question.html"));
+    tabs.open(self.data.url("ui-demo.html"));  // TODO, fix
   }
 
   if (options.reset) {
@@ -64,7 +58,7 @@ let main = exports.main = function (options, callback) {
     arms.regenerate();
   }
 
-
+  // decide and implement arm
   let armnumber; // undef;
 
   if (options.armnumber !== undefined) {
@@ -99,22 +93,22 @@ let main = exports.main = function (options, callback) {
     die = yesdie;
   }
 
-  // upgrades
-  //
+  // on upgrade?
+  // (no special code)
+
 
   // standard sequence - a la a unit test
   let setup;
 
-  if (experiment.isSetup()) {
-    setup = resolve(experiment.revive()); // first time!
+  if (experiment.isSetup()) {  //i.e., was it *ever* configured.
+    setup = resolve(experiment.revive());
   } else {
-    setup = experiment.firstStartup(armnumber);  // else!
+    setup = experiment.firstStartup(armnumber);  // first time only
   }
-
 
   let run_if_not_ran = function () {
     if (experiment.ran()) {
-      console.log("already ran");
+      console.log("already ran");  // nothing more to do.
       resolve(true);
     } else {
       console.log("will run");
@@ -126,11 +120,12 @@ let main = exports.main = function (options, callback) {
   die).then(
   run_if_not_ran).then(   // - run if not ran
   ).then(
-  ).then(
   null, console.error // all errors;
   );
 
   // - teardown
+  // (no teardown)
 };
 
-// teardown
+
+// on unload? -- nothing to do!

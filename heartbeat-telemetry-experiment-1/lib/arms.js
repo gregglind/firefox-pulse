@@ -43,6 +43,7 @@ const ui = require("./ui");
 const triggers = require("./triggers");
 const { phonehome } = require("./phonehome");  // this is a gross dep
 const experiment = require("experiment");
+const flow = require("flow");
 
 const config = exports.config = {
   delay: 5*60*1000  /* 5 min */
@@ -108,7 +109,6 @@ const widgets = exports.widgets = [
   }
 ];
 
-
 /**
   *
   */
@@ -122,14 +122,16 @@ let gen_arm = exports.gen_arm = function (I, Q, W) {
     () => {
       let flowid = uu();
       console.log("flow: triggers reset");
-      phonehome({flowid:flowid, msg: "flow-started"});
+      flow.create(flowid, Q);
+      flow.began();
+      phonehome();
 
       I.fn(() => { // triggers, all are callback
-      phonehome({flowid:flowid, msg: "flow-triggered"});
-        console.log;("flow: innteruption complete");
+        flow.offered();
+        phonehome();
+        console.log("flow: innteruption complete");
         // notify the experient we are done.
-        emit(experiment.observer, "ran");
-
+        emit(experiment.observer, "ran");  // one and done
         W.fn(extend({},Q, {armname: armname}), flowid); // widget fires, as param'ed by Question
       });
     });

@@ -433,6 +433,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   // click emits and closes the bar.
   starEl.addEventListener("click", function (evt) { /*weak*/
     let s = evt.target.getAttribute("data-score");
+    let rating = Number(s, 10);
     console.log('you rated:', s, evt.target.id);
 
     // thank you.
@@ -443,9 +444,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
     }
     let delay = overrides.delay || conf.delay || 1000;
 
-    // TODO, phonehome here?
-    // TODO, to pass?
-    openEngagementPage(which, Number(s, 10), {flowid: flowid, armname: conf.armname});
+    flow.rate(rating);
+    openEngagementPage(which, rating, {flowid: flowid, armname: conf.armname});
     win.setTimeout(() => {box.removeCurrentNotification();}, delay);
   });
 

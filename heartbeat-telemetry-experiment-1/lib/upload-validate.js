@@ -94,6 +94,7 @@ let validate = exports.validate = function (packet) {
     "updated_ts": vTimestamp('updated_ts', false),  // 1416011156000,
     "question_text": vstring('question_text', false),  //"how was lunch?",
     "variation_id": vstring('variation_id', false),  // "1",
+    "experiment_version": vstring('experiment_version', false),  // "1"
     // fields for this study...
     "score": vScore("score"),  // null,  TODO, 0 is a valid score for nps
     "max_score": vScore("max_score"),   //
@@ -110,7 +111,7 @@ let validate = exports.validate = function (packet) {
     "partner_id": vstring('partner_id', false),       //
     "profile_age": vNumber('profile_age'),    //
     "profile_usage": vJsonableObject("profile_usage"),    //
-    "addons": vArray("addons"),           //
+    "addons": vJsonableObject("addons"), // lets do {addons} ... vArray("addons"),           //
     "extra": vJsonableObject("extra"),
     // is this real?
     "is_test": vboolean('is_test'), //true

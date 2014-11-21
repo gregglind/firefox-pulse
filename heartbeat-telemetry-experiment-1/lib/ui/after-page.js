@@ -27,6 +27,7 @@ let Q = {"rating": 3, "outof": 5, "question": "What?"};
 let flowid = 1234;
 
 let phonehome = require("phonehome");
+let flow = require("flow");
 
 let factory = exports.factory = function (cso) {
   cso = cso || extend({},Q, {flowid: flowid, rating: 3}); // fake
@@ -39,7 +40,11 @@ let factory = exports.factory = function (cso) {
       worker.port.on("link", function (q) {
         console.log("afterPage link clicked", q);
         q.msg = "afterPage-link";
+        // TODO
+        // engage, set up after links.
         phonehome.phonehome(q);
+        if (flow.currrent)
+        flow.engage();
       });
     },
     onDetach: function(worker) {

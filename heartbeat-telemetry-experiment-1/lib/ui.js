@@ -15,9 +15,7 @@ const { data } = require("sdk/self");
 const { extend } = require("sdk/util/object");
 const tabs = require("sdk/tabs");
 
-const dh = require("ui/doorhanger");
 const notification = require("ui/notification");
-const { anchor } = require("ui/anchor");
 
 const { phonehome } = require("phonehome");
 const uiutils = require("ui/ui-utils");

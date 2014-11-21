@@ -8,28 +8,22 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global */
+/*global require, exports, console */
 
 "use strict";
 
 const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
+const { defer } = promises;
 const myprefs = require("sdk/simple-prefs").prefs;
 
 const { EventTarget } = require("sdk/event/target");
-let { emit } = require('sdk/event/core');
-
-let triggers = require("triggers");
-let arms = require("arms");
+const { emit } = require('sdk/event/core');
 
 const { uu } = require("./utils");
 
-/**
-  Assumptions...
-
-  - on this, we can't serialize whole state,
-  - we can serial recall cues (number, name)
-*/
+const triggers = require("triggers");
+const arms = require("arms");
+const flow = require("flow");
 
 // module vars
 let myarm;
@@ -45,6 +39,9 @@ observer.on("ran", function () {
   myprefs.ran = true;
 });
 
+/**
+  *
+  */
 let rememberArm = function (data) {
   myarm = data;
   myprefs.armnumber = data.number;
@@ -52,8 +49,12 @@ let rememberArm = function (data) {
   // other stuff on history, arm stuff?
 };
 
+/**
+  *
+  */
 let revive = exports.revive = function () {
   let armnumber = myprefs.armnumber;
+  flow.revive();
   setupArm(armnumber);
 }
 
@@ -79,21 +80,37 @@ let ran = exports.ran = function () {
   return myprefs.ran;
 };
 
+/* things for first time only */
 let firstStartup = exports.firstStartup = function (armnumber) {
   let {promise, resolve} = defer();
   reset();
 
   //setup
   myprefs.firstrunts = "" + Date.now();
-  myprefs.person = uu();
+  myprefs.person_id = uu();
+  myprefs.survey_id = "telemetry-heartbeat-experiment-1";
   setupArm(armnumber); // here, random, sets some prefs and module var
   myprefs.configured = true;
   resolve();
   return promise;
 };
 
+
+let setupOk = function () {
+  if (!myprefs.person_id || !myprefs.configured || !myprefs.survey_id) {
+    return false;
+  }
+  return true;
+};
+
+/* things for every run.  Expect setup per firstStartup */
 let everyRun = exports.everyRun = function () {
   let {promise, resolve, reject} = defer();
+
+  if (!setupOk) {
+    reject("something in prefs setup is wrong");
+  }
+
   console.log("arm:", myarm.number, myarm.name);
   if (myarm.number === undefined) {
     reject("everRun:  Arm number undefined");
@@ -101,11 +118,12 @@ let everyRun = exports.everyRun = function () {
   setupArm(myarm.number);
   myarm.flow();  // do it!
   emit(observer, "flow" , myarm.armnumber);
-  // rememberArm()? -> to pref?
   resolve();
   return promise;
 };
 
+
+/** functions for tests and debugging */
 
 let reset = exports.reset = function () {
   for (let k in myprefs) {
@@ -117,3 +135,4 @@ let changeArm = exports.changeArm = function (armnumber) {
   triggers.reset();
   setupArm(armnumber); // assign
 };
+

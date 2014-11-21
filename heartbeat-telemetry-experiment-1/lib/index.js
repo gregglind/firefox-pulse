@@ -23,10 +23,21 @@ const promises = require("sdk/core/promise");
 const { defer, resolve } = promises;
 
 
+/**
+
+  allowed options
+  - showui
+  - reset
+  - phonehome
+  - testing
+  - delay
+*/
 let main = exports.main = function (options, callback) {
+
   console.log("running");
   // args
   options = options.staticArgs || {};
+  console.log("passed options:", options);
 
   if (options.showui) {
     require("./ui/ui-demo");

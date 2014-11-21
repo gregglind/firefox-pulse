@@ -13,23 +13,17 @@
 "use strict";
 
 const tabs = require("sdk/tabs");
-
 const { on, once, off, emit } = require('sdk/event/core');
-
 const timers = require("sdk/timers");
-
 const utils = require("utils");
 
-// map or list to store them all?
+//
 let undo = [];
 
 let reset = exports.reset = function () {
   // TODO, improve by taking any that return promises and waiting.
   // not sure how this should work.
-  console.log("clearing!");
   undo.forEach(function (k, i) {
-    console.log('undoing', i);
-    //console.log(k.slice(2));
     (k[0]).apply(k[1], k.slice(2));
   });
 };
@@ -43,7 +37,6 @@ let reset = exports.reset = function () {
   *
   * Returns:  unclear
   */
-
 
 //
 let tabObs = require('sdk/tabs/observer').observer;

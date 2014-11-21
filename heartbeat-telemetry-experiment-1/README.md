@@ -1,4 +1,4 @@
-Firefox Pulse Uptake Rate Experiment Addon (Test Pilot)
+Heartbeat Telemetry Experiment 1
 =========================================================
 
 

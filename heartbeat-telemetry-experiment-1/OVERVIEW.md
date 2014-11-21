@@ -39,3 +39,10 @@
 - lib/ui.js : UI constructors / Factories.  Bind flow specifics into UX
 - lib/upload-validate.js:  Validator for data upload.
 - lib/utils.js : uuid() and other small utils.
+
+
+
+## Example build  (34+)
+```
+cfx run -b /Applications/FirefoxAurora.app/ --static-args '{"delay": 100, "armnumber":5, "phonehome": true}' #  for example
+```

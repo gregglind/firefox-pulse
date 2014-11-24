@@ -30,6 +30,8 @@ const micropilot = require("micropilot-trimmed");
   * - phonehome
   * - testing
   * - delay
+  * - killafter
+  *
   */
 let main = exports.main = function (options, callback) {
 

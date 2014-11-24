@@ -1,15 +1,15 @@
 {
-    "license": "MPL",
-    "description": "Telemetry Experiment:  Heartbeat Experiment 1.",
-    "engines": {
-        "firefox": ">=34.0"
-    },
-    "author": "Gregg Lind <glind@mozilla.com>",
-    "title": "Heartbeat Telemetry Experiment 1",
-    "homepage": "https://github.com/gregglind/firefox-pulse",
-    "version": "2.0.0",
-    "main": "lib/index.js",
-    "id": "heartbeat-telemetry-experiment-1@mozilla.com",
-    "name": "heartbeat-telemetry-experiment-1",
-    "icon": "data/icons/Heartbeat-icon.png"
+  "license": "MPL",
+  "description": "Telemetry Experiment:  Heartbeat Experiment 1.",
+  "engines": {
+    "firefox": ">=34.0"
+  },
+  "author": "Gregg Lind <glind@mozilla.com>",
+  "title": "Heartbeat Telemetry Experiment 1",
+  "homepage": "https://github.com/gregglind/firefox-pulse",
+  "version": "2.0.0",
+  "main": "lib/index.js",
+  "id": "heartbeat-telemetry-experiment-1@mozilla.com",
+  "name": "heartbeat-telemetry-experiment-1",
+  "icon": "data/icons/Heartbeat-icon.png"
 }

@@ -128,4 +128,4 @@ let main = exports.main = function (options, callback) {
 };
 
 
-// on unload? -- nothing to do!
+// on unload? -- nothing to do?  Should we clear prefs?

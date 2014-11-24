@@ -10,6 +10,14 @@
 
 
 // implements:  https://bugzilla.mozilla.org/show_bug.cgi?id=1092376
+//
+// Nits / Problems (WONTFIX)
+// - smallest page size doesn't hbox around 'children' properly (needs hbox with flex?)
+// - Font and icon sizing affects parent.  Thus if other notification showing in
+//   queue, will affect it too.
+// - no accessibility features AT ALL.
+
+
 
 /**  USAGE
   * Exposes:  `makeNotice(which, overrides)`
@@ -46,9 +54,13 @@ const data = require("sdk/self").data;
 const { extend } = require("sdk/util/object");
 const querystring = require("sdk/querystring");
 
-const { validateWithOptional } = require("../utils");
 const notification = require("./notification");
 
+const flow = require("flow");
+
+const sss = require("stylesheetservice");
+
+sss.register(sss.getURI(data.url("icons/iconstyles.css")));
 
 // utils
 let hoverize = function (el, fhover, foff) {
@@ -107,15 +119,27 @@ Problems:
 */
 
 let starchar = "★";
+let staroff = data.url("icons/star-off.png");
+let starlit = data.url("icons/star-lit.png");
 
 let makeStarElString = function (n) {
   let out = [];
   for (let ii = 0; ii < n; ii++) {
     let j = ii+1;
-    out.push(`<span class="star-x" data-score="`+ j +`" id="star`+ j +`">`+ starchar +`</span>`);
+    out.push(`<span class="star-x" style="background-repeat: no-repeat; background-size: 24px 24px; cursor: pointer; width:24px; height:24px; background-image: url(${staroff})" data-score="${j}" id="star${j}"></span>`);
   }
   return out;
 };
+/*
+let makeStarElString = function (n) {
+  let out = [];
+  for (let ii = 0; ii < n; ii++) {
+    let j = ii+1;
+    out.push(`<span class="star-x" style='background-repeat: "no-repeat"; background-size: "24px 24px"; cursor: pointer; width:24px; height:24px;' data-score="${j}" id="star${j}"></span>`);
+  }
+  return out;
+};*/
+
 
 let makeNpsString = function () {
   let n = 11;
@@ -123,7 +147,7 @@ let makeNpsString = function () {
   for (let ii = 0; ii < n; ii++) {
     let j = ii;
     // out.push(`<span class="star-x" style="background-color:rgba(0, 0, 255,.1); margin: 0px 3px; width:30px; display: block; text-align: center;" id="star`+ j +`">`+ ii +`</span>`);
-    out.push(`<span class="star-x" data-score="`+ j +`" style="box-shadow: 0px 0px 0px 2px rgba(255,255,255,.1);    border-radius: 15px; margin: 0px 3px; width:30px; display: block; text-align: center;" id="star`+ j +`">`+ ii +`</span>`);
+    out.push(`<span class="star-x" data-score="`+ j +`" style="cursor: pointer; border: 1px solid #C1C1C1;  width: 28px; height:28px; border-radius: 0px; margin: 0px 0px; display: table-cell; vertical-align: middle; text-align: center;" id="star`+ j +`">`+ ii +`</span>`);
   }
   return out;
 };
@@ -136,9 +160,12 @@ let defaultBarConfig = {
     // should this be a fn?
     widgetstring:  makeStarElString(5 /*nstars*/).join("\n"),
     widgetLitStyles: {
-      color: 'orange'
+      backgroundImage:  "url(" + starlit + ")"
+
+      //color: 'orange'
     },
     widgetUnlitStyles: {
+      backgroundImage:  "url(" + staroff + ")"
     },
     _v: "stars.v1"
   },
@@ -149,12 +176,13 @@ let defaultBarConfig = {
     widgetstring:  makeNpsString().join("\n"),
     widgetLitStyles: {
       //color: 'white',
-      backgroundColor: "orange",
-      boxShadow: "0px 0px 0px 2px rgba(255,255,255,1)" // white
+      backgroundColor: "#DADADA", // "#EBEBEB",
+      //boxShadow: "0px 0px 0px 2px rgba(255,255,255,1)" // white
     },
     widgetUnlitStyles: {
       //color: 'white',
-      boxShadow: "0px 0px 0px 2px rgba(255,255,255,.1)"
+      backgroundColor: "#FBFBFB",
+      //boxShadow: "0px 0px 0px 2px rgba(255,255,255,.1)"
     },
     _v:  "nps.v1"
   }
@@ -235,24 +263,22 @@ let openEngagementPage = exports.openEngagementPage = function(which, score, qar
 };
 
 
-let validateNoticeOptions = function (options) {
-  let rules = {
-    which: {
-      // enum
-    },
-    flowid: {
-
-    }
-  };
-
-  return validateWithOptional(options, rules);
+let oneOf = function (choices_array) {
+  return (thing) => choices_array.find(thing) >=0
 };
 
-
+let mustDefined = (x) => {if (x === undefined) {throw "must be defined";}};
 
 // unclear what arity and args should be here.
 let makeNotice = function (which, flowid, bartype, overrides) {
   if (overrides === undefined) overrides = {};
+
+  mustDefined(flowid);
+  mustDefined(which);
+  mustDefined(bartype);
+  oneOf(["nps", "stars"], which);
+  oneOf(["top-global", "bottom-global"], bartype);
+
 
   // should we mixin the overrides over the conf?
   // TODO, maybe after one more :)
@@ -279,6 +305,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
     1, // priority,
     null, // buttons,
     function () {  // cb on close!
+      styleEl(messageImage, {width: "36px", height: "36px"}, true); // reset
+
       //      let info = extend({},
       //        Q,
       //        {
@@ -300,7 +328,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
       box = notification.notificationbox(win, bartype);
       break;
     default:
-      throw "bartype: " + bartype + " not allowed.";
+      throw "bartype: " + bartype + " not allowed."; // oneOf should cover this
   }
 
   //box.removeAllNotifications();
@@ -311,7 +339,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   let messageText = document.getAnonymousElementByAttribute(notice, "class", "messageText");
   let closeButton = document.getAnonymousElementByAttribute(notice, "class", "messageCloseButton close-icon tabbable");
 
-  styleEl(messageImage, {width: "64px", height: "64px"});
+  styleEl(messageImage, {width: "36px", height: "36px"});
 
   let starstring = `<span id="star"> ` + conf.widgetstring + `</span>`;
   // put it on!
@@ -348,12 +376,13 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   }
 
   // move the flexer // maybe stars only
-  let spacer = messageText.nextSibling;
-  spacer.setAttribute("flex", 20); // 20x as much as on the message.
-  // this should remove most of the gap between message and stars.
-  messageText.parentElement.appendChild(spacer.cloneNode());
-  spacer.remove();  // is this destroyed?
-
+  if (which === "stars") {
+    let spacer = messageText.nextSibling;
+    spacer.setAttribute("flex", 20); // 20x as much as on the message.
+    // this should remove most of the gap between message and stars.
+    messageText.parentElement.appendChild(spacer.cloneNode());
+    spacer.remove();  // is this destroyed?
+  }
 
   notice.appendChild(lessEl);
   notice.appendChild(starry);
@@ -414,7 +443,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
         // set score
         scoreEl.textContent = n;
         scoreEl.style.opacity = "" + (n / nstars);
-        scoreEl.style.color = "orange";
+        scoreEl.style.color = "#0095ED";
       });
       el.addEventListener("mouseout", function (evt) {
         ////console.log("hover on",evt.target.id);
@@ -422,7 +451,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
         // set score
         scoreEl.textContent = "";
         //scoreEl.style.opacity = "" + (n / nstars);
-        //scoreEl.style.color = "orange";
+        //scoreEl.style.color = "#0095ED";
       });
 
     });
@@ -437,16 +466,23 @@ let makeNotice = function (which, flowid, bartype, overrides) {
     console.log('you rated:', s, evt.target.id);
 
     // thank you.
+    notice.image = iconsByAlias.heart;
     notice.label = overrides.outmsg || conf.outmsg || "Thank you for making Firefox better!";
+
+    // todo add a pulse on the new icon.  cant figure out how :(
+
     // empty it
     while (notice.firstChild) {
       notice.removeChild(notice.firstChild);
     }
-    let delay = overrides.delay || conf.delay || 1000;
+    let delay = overrides.delay || conf.delay || 1500;
 
     flow.rate(rating);
     openEngagementPage(which, rating, {flowid: flowid, armname: conf.armname});
-    win.setTimeout(() => {box.removeCurrentNotification();}, delay);
+    win.setTimeout(() => {
+      messageImage.classList.remove('animatetwice',"pulse");
+      box.removeCurrentNotification();
+    }, delay);
   });
 
   if (overrides && overrides.mikestyle) {
@@ -459,6 +495,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
 
   // icon bleed
   //messageImage.style.margin = "-10px 10px -20p -12px";
+
+  messageImage.classList.add('animateonce',"pulse");
 
   // should return the options / overrides maybe?
   return {

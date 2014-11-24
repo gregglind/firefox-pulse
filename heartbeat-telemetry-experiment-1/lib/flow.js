@@ -75,10 +75,10 @@ let link = exports.link = function (link) {
   persist();
 };
 
-let rate = exports.link = function (n) {
+let rate = exports.rate = function (n) {
   _current.score = n;
   persist();
-}
+};
 
 // module getter
 let current = exports.current = () => _current;

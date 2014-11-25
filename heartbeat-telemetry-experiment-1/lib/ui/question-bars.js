@@ -53,6 +53,7 @@ const tabs = require("sdk/tabs");
 const data = require("sdk/self").data;
 const { extend } = require("sdk/util/object");
 const querystring = require("sdk/querystring");
+const os = require('sdk/system/runtime').OS;
 
 const notification = require("./notification");
 
@@ -198,9 +199,10 @@ let mikestyle = {
   notice:  {
     color: '#333333',
     fontWeight: "normal",
-    fontFamily: "Lucida Grande",
+    fontFamily: "Lucida Grande, Segoe, Ubuntu",
     //lineHeight: "16px",
-    background: "#F1F1F1", // no image!
+    background: "#F1F1F1",
+    backgroundImage:  ['inherit', 'linear-gradient(-179deg, #FBFBFB 0%, #EBEBEB 100%)'][!!(os.toLowerCase() === "darwin")], // no image!
     boxShadow: "0px 1px 0px 0px rgba(0,0,0,0.35)"
   },
   messageText: {
@@ -217,8 +219,6 @@ let mikestyle = {
     marginRight: "10px"
   }
 };
-
-
 
 let baseEngageUrl = data.url("pages/");
 // TODO, plumb the links

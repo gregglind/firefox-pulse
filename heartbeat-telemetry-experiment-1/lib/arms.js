@@ -38,7 +38,7 @@ const { resolve } = promises;
 const { extend } = require("sdk/util/object");
 
 
-const { uu } = require('utils');
+const { uu, randint } = require('utils');
 const ui = require("./ui");
 const triggers = require("./triggers");
 const { phonehome } = require("./phonehome");  // this is a gross dep
@@ -49,14 +49,6 @@ const config = exports.config = {
   delay: 5*60*1000  /* 5 min */
 };
 
-
-let randint = function(l, r) {
-  if (r === undefined) {
-    r = l;
-    l = 0;
-  }
-  return Math.floor(l + (Math.random() * (r-l)));
-};
 
 let chooseArm = exports.chooseArm = function (rng, arms) {
   if (arms === undefined) arms = ARMS();

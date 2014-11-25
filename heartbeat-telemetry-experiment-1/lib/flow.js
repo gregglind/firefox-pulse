@@ -15,6 +15,7 @@
 const myprefs = require("sdk/simple-prefs").prefs;
 const { extend } = require("sdk/util/object");
 
+console.log("flow, no promises");
 
 // TODO, should this be part of the experiment?
 // TODO, should be event based / part of hte experiment tracker
@@ -55,15 +56,25 @@ let flow_base = {
 
 let _current;
 
-// order of phases.
-let passedPhase = function (phase) {
-  ["began",
-  "offered",
-  "voted",
-  "engaged"].forEach(function(){
 
-  })
-}
+// a bit gruesome.  Avoiding writing a full state depedency checker
+let phases = exports.phases =   {
+  "began": [],
+  "offered": ['began'],
+  "voted": ['began', 'offered', ],
+  "engaged": ['began', 'offered', 'voted']
+};
+
+// order of phases.
+let provePhaseReady = function (phase) {
+  let reqs = phases[phase];
+  reqs.forEach(function(k) {
+    let key = "flow_" + k + "_ts";
+    if (_current[key] <= 0) {
+      throw phase + " requires " + k;
+    }
+  });
+};
 
 let create = exports.create = function (flow_id, Q) {
   _current = extend({}, flow_base);
@@ -95,6 +106,7 @@ let current = exports.current = () => _current;
 
 ["began", "offered", "voted", "engaged"].forEach(function (k) {
   exports[k] = function (ts) {
+    provePhaseReady(k); //
     let key = "flow_" + k + "_ts";
     if (key in _current) {
       _current[key] = ts || Date.now();

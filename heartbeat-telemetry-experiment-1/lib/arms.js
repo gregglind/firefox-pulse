@@ -126,7 +126,10 @@ let gen_arm = exports.gen_arm = function (I, Q, W) {
         emit(experiment.observer, "ran");  // one and done
         W.fn(extend({},Q, {armname: armname}), flowid); // widget fires, as param'ed by Question
       });
-    });
+    }).then(
+      null,
+      console.error
+    );
   };
   return a;
 };

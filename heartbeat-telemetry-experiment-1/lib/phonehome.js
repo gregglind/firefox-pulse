@@ -45,6 +45,7 @@ let annotate = exports.annotate = function (obj) {
   obj.response_version = 1;
   obj.updated_ts = Date.now();
 
+
   personinfo.getData().then(
     function (data) {
       //obj = extend({}, obj, data);
@@ -117,11 +118,13 @@ let phonehome = exports.phonehome = function(dataObject, options){
     // worth catching errors here?  If so, so what to do next?
     // TODO check responses
     console.log("REQUEST COMPLETE", which, response.status, response.text);
-    cb();
+    cb(response);
   }
 
   if (options.testing) {
     dataObject.is_test = true;
+  } else {
+    dataObject.is_test = false;
   }
 
   let send = function (dataObject) {

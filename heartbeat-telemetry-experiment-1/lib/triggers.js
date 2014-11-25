@@ -52,7 +52,8 @@ let newtab = exports.newtab = function (consequence_fn) {
   let selfRemoving = function selfRemoving () {
     tabObs.removeListener("open", selfRemoving);
     utils.wait(500).then( // the wait is so the new tab can get active
-    () => consequence_fn.apply(tabObs, arguments) // do it
+      () => consequence_fn.apply(tabObs, arguments), // do it,
+      console.error
     );
   };
 

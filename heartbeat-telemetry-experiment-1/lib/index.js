@@ -24,7 +24,6 @@ const micropilot = require("micropilot-trimmed");
 const { emit } = require('sdk/event/core');
 const apiUtils = require("sdk/deprecated/api-utils");
 
-
 let validateStaticArgs = function (staticArgs) {
   let rules = {
     showui: {is: ['boolean']},

@@ -55,6 +55,16 @@ let flow_base = {
 
 let _current;
 
+// order of phases.
+let passedPhase = function (phase) {
+  ["began",
+  "offered",
+  "voted",
+  "engaged"].forEach(function(){
+
+  })
+}
+
 let create = exports.create = function (flow_id, Q) {
   _current = extend({}, flow_base);
   _current.flow_id = flow_id;

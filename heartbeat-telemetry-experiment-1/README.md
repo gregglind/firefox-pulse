@@ -6,10 +6,11 @@ Heartbeat Telemetry Experiment 1
 ```
 # needs fx34+
 
-cfx run -b /Applications/FirefoxAurora.app/ --static-args '{"delay": 1000000, "showui": true, "armnumber":5, "phonehome": false}'
+cfx run -b /Applications/FirefoxAurora.app/ --static-args '{"lateenough": true, "delay": 1000000, "showui": true, "armnumber":5, "phonehome": false}'
 ```
 ### Static-args:
 
+* `lateenough`:  run TODAY, to evade sampling / experiment delay.
 * `delay`: how long to wait before popping
 * `showui`:  open the 'all variations' page
 * `armnumber`: 0-5 (see ARMS below).  Override which experiment variation

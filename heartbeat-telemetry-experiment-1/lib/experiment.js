@@ -15,6 +15,7 @@
 const promises = require("sdk/core/promise");
 const { defer } = promises;
 const myprefs = require("sdk/simple-prefs").prefs;
+const { setInterval, clearInterval } = require('sdk/timers');
 
 const { EventTarget } = require("sdk/event/target");
 const { emit } = require('sdk/event/core');
@@ -25,6 +26,8 @@ const triggers = require("triggers");
 const arms = require("arms");
 const flow = require("flow");
 
+const { randint } = require("./utils");
+
 // module vars
 let myarm;
 
@@ -33,10 +36,15 @@ let myarm;
   *  - set-arm (armnumber);
   *  - flow (armnumber)
   */
-let observer = exports.observer = EventTarget();
+let observer = exports.observer = new EventTarget();
 
 observer.on("ran", function () {
   myprefs.ran = true;
+});
+
+observer.on("lateenough", function () {
+  console.log('got lateenough');
+  myprefs.lateenough = true;
 });
 
 /**
@@ -60,7 +68,7 @@ let revive = exports.revive = function () {
 
 /* useful in cases where we know the armno, but not the armdata */
 let setupArm = exports.setupArm = function (armnumber) {
-  let arm = myarm = arms.chooseArm(armnumber);
+  let arm = myarm = arms.chooseArm(armnumber); // leak myarm to module
   rememberArm(arm);
   emit(observer, "set-arm", armnumber);
 };
@@ -72,6 +80,7 @@ let isSetup = exports.isSetup = function () {
   return myprefs.configured === true;
 };
 
+
 let firstrunts = exports.firstrunts = function () {
   return Number(myprefs.firstrunts, 10);
 };
@@ -79,6 +88,7 @@ let firstrunts = exports.firstrunts = function () {
 let ran = exports.ran = function () {
   return myprefs.ran;
 };
+
 
 /* things for first time only */
 let firstStartup = exports.firstStartup = function (armnumber) {
@@ -89,6 +99,8 @@ let firstStartup = exports.firstStartup = function (armnumber) {
   myprefs.firstrunts = "" + Date.now();
   myprefs.person_id = uu();
   myprefs.survey_id = "telemetry-heartbeat-experiment-1";
+
+  decideday(Date.now(), samplingconfig.days);
   setupArm(armnumber); // here, random, sets some prefs and module var
   myprefs.configured = true;
   resolve();
@@ -111,14 +123,27 @@ let everyRun = exports.everyRun = function () {
     reject("something in prefs setup is wrong");
   }
 
-  console.log("arm:", myarm.number, myarm.name);
-  if (myarm.number === undefined) {
-    reject("everRun:  Arm number undefined");
+  if (lateenough()) {
+    console.log("arm:", myarm.number, myarm.name);
+    if (myarm.number === undefined) {
+      reject("everRun:  Arm number undefined");
+    }
+    setupArm(myarm.number);
+    myarm.flow();  // do it!
+    emit(observer, "flow" , myarm.armnumber);
+    resolve();
+  } else {
+    emit(observer, "waitforlateenough");
+    console.log("waitingforlateenough");
+    // set self calling timer.
+    let okgoTimer = setInterval(()=>{
+      if (lateenough()) {
+        clearInterval(okgoTimer);
+        emit(observer, "lateenough");
+      }
+    }, samplingconfig.checkinterval);
+
   }
-  setupArm(myarm.number);
-  myarm.flow();  // do it!
-  emit(observer, "flow" , myarm.armnumber);
-  resolve();
   return promise;
 };
 
@@ -135,4 +160,62 @@ let changeArm = exports.changeArm = function (armnumber) {
   triggers.reset();
   setupArm(armnumber); // assign
 };
+
+
+
+/// Sampling manager
+
+
+/**! module goal:  handle 'recurring' aspect of experiment.
+
+Problem:  Telemetry Experiments can only be 'run once'.  To randle 'recurring',
+one my 'deploy widely', then stingily use the sample.
+
+Algorithm to make sample last N days.
+- on initial, choose randint in [0, N-1]
+- record 'day to run', based on that.
+- decide 'okay to run' when that day comes, or after
+- (implicitly spits the sample into N parts)
+
+
+Problems:
+- tremendously complicates addon logic.
+- May bias toward soon after 'startup'.
+- tangles with the experiment runner.
+- biases / conflates 'return' with 'sample'
+  while the experiment is running, this a true sample of online users,
+  but after the experiment closes it is not.
+*/
+
+/* exposed module level config */
+let samplingconfig = exports.samplingconfig  = {
+  checkinterval:  1000 * 60 * 60 * 4, // 4 hours
+  days: 100
+};
+
+/* return the saved date, from prefs */
+let getSaved = exports.savedDate = () => {
+  return Number(myprefs.runafter, 10);
+};
+
+/* decide how long to wait */
+let decideday = exports.decideday = function (ts, days, r) {
+  if (ts === undefined) ts = new Date().now();
+  if (days === undefined) days = samplingconfig.days;
+  if (r === undefined) r = randint(days);
+
+  let when = ts + 86400 * 1000  /*day*/ * days;
+  myprefs.runafter = when + "";
+  myprefs.decideday = JSON.stringify([ts, days, r]);
+};
+
+/* */
+let lateenough = exports.lateenough = function () {
+  console.log(myprefs.lateenough, getSaved());
+  return myprefs.lateenough || (Date.now() >= getSaved());
+};
+
+
+
+
 

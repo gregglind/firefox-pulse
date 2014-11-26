@@ -24,6 +24,13 @@ const micropilot = require("micropilot-trimmed");
 const { emit } = require('sdk/event/core');
 const apiUtils = require("sdk/deprecated/api-utils");
 
+const { hasE10s } = require("e10s");
+
+if (hasE10s()) {
+  micropilot.killaddon();
+}
+
+
 let validateStaticArgs = function (staticArgs) {
   let rules = {
     showui: {is: ['boolean']},
@@ -180,3 +187,6 @@ exports.onUnload = function (reason) {
     experiment.reset();
   }
 };
+
+
+

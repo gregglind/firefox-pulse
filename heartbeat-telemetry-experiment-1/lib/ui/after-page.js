@@ -32,7 +32,7 @@ let factory = exports.factory = function (cso) {
     //contentScriptOptions: cso,
     contentScriptFile: data.url('packed-after.js'),
     contentScriptOptions: cso,
-    contentStyle: ["* {background: red;}"],
+    contentStyle: [],
     onAttach: function(worker) {
       console.log("ATTACHING factory");
       worker.port.on("link", function (link) {

@@ -59,8 +59,8 @@ let annotate = exports.annotate = function (obj) {
       obj.channel = data.updateChannel;
       obj.version = data.fxVersion;
       obj.locale = data.location;
-      obj.build_id = "?", // TODO
-      obj.partner_id = "?", // TODO
+      obj.build_id = data.prefs['gecko.buildID'] || "-", // TODO
+      obj.partner_id = data.prefs['distribution.id'] || "-", // TODO
       obj.profile_age = data.profileage,
       obj.profile_usage = {total:data.sumMs},
       obj.addons = {"addons": data.addons},

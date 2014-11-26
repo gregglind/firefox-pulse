@@ -51,7 +51,7 @@ let flow_base = {
   //// is this real?
   //"is_test": vboolean('is_test') //true
 
-  "flow_links": [],  // array of (ts, id)  // TODO
+  "flow_links": []  // array of (ts, id)  // TODO
 };
 
 let _current;

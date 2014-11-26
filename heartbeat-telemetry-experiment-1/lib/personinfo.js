@@ -101,7 +101,10 @@ let getData = exports.getData = function () {
       "privacy.donottrackheader.value",
       "places.history.enabled",
       "browser.tabs.remote",
-      "browser.tabs.remote.autostart"].forEach(function(k) {
+      "browser.tabs.remote.autostart",
+      "distribution.id",
+      "gecko.buildID"
+      ].forEach(function(k) {
         d.prefs[k] = genPrefs.get(k);
       });
   };

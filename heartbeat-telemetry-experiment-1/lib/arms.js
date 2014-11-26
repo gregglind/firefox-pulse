@@ -142,6 +142,7 @@ let gen_arm = exports.gen_arm = function (I, Q, W) {
 let generate_arms = function () {
   let out = [];
   // yes we could be fancier, but debugging permutations code is a bad use of time.
+  // [for (a of x) for (b of y) a+'.'+b]  next time!
   interruptions.forEach( (I)=>{
     questions.forEach( (Q) => {
       widgets.forEach( (W) => {

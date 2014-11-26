@@ -283,7 +283,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   mustDefined(flowid);
   mustDefined(which);
   mustDefined(bartype);
-  oneOf(["nps", "stars"], which);
+  oneOf(["nps", "stars"])(which) || throw "must be nps|stars";
   oneOf(["top-global", "bottom-global"], bartype);
 
 
@@ -402,9 +402,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   notice.appendChild(scoreEl);
   scoreEl.style.width="24px";
   scoreEl.style.textAlign = "center";
-  scoreEl.style.display = "block";
   scoreEl.style.margin = "0px 10px";
-  scoreEl.style.display = "none";
+  scoreEl.style.display = "none"; // would be 'block'
 
   // name of this button set
   let starEl = notice.children.star;
@@ -491,7 +490,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
 
     openEngagementPage(which, rating, {flowid: flowid, armname: conf.armname});
     win.setTimeout(() => {
-      messageImage.classList.remove('animatetwice',"pulse");
+      // TODO, pulsing here is desired, but didn't work GRL
+      // messageImage.classList.remove('animatetwice',"pulse");
       box.removeCurrentNotification();
     }, delay);
   });

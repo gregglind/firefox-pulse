@@ -45,12 +45,11 @@ let annotate = exports.annotate = function (obj) {
   obj.response_version = 1;
   obj.updated_ts = Date.now();
 
-
   personinfo.getData().then(
     function (data) {
       //obj = extend({}, obj, data);
-      console.log("OBJECT");
-      console.log(JSON.stringify(obj,null,2));
+      //console.log("OBJECT");
+      //console.log(JSON.stringify(obj,null,2));
 
 //rint("Running tests on " + system.name + " " + system.version + "/Gecko " + system.platformVersion + " (" + system.id + ") under " +
 //                 system.platform + "/" + system.architecture + ".\n");
@@ -122,11 +121,7 @@ let phonehome = exports.phonehome = function(dataObject, options){
     cb(response);
   }
 
-  if (options.testing) {
-    dataObject.is_test = true;
-  } else {
-    dataObject.is_test = false;
-  }
+  dataObject.is_test = !!options.testing;
 
   let send = function (dataObject) {
     /** TP packet

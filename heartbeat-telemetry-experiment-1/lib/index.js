@@ -173,3 +173,10 @@ let main = exports.main = function (options, callback) {
 
 
 // on unload? -- nothing to do?  Should we clear prefs?
+
+
+exports.onUnload = function (reason) {
+  if ((reason === "disable") || reason === "uninstall") {
+    experiment.reset();
+  }
+};

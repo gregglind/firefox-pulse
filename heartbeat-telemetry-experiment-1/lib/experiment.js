@@ -97,7 +97,7 @@ let firstStartup = exports.firstStartup = function (armnumber) {
 
   //setup
   myprefs.firstrunts = "" + Date.now();
-  myprefs.person_id = uu();
+  myprefs.person_id = "na"; // uu();
   myprefs.survey_id = "telemetry-heartbeat-experiment-1";
 
   decideday(Date.now(), samplingconfig.days);

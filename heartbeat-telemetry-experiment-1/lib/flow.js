@@ -82,6 +82,11 @@ let create = exports.create = function (flow_id, Q) {
   _current.question_text = Q.msg;
   _current.question_id = Q.alias;
   _current.max_score = Q.max_score;
+
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1092375#c11
+  if (!myprefs.numflows) myprefs.numflows = 0;
+  myprefs.numflows += 1;
+
 };
 
 let persist = exports.persist = function () {

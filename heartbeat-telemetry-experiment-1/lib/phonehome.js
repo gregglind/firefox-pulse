@@ -58,15 +58,19 @@ let annotate = exports.annotate = function (obj) {
       obj.channel = data.updateChannel;
       obj.version = data.fxVersion;
       obj.locale = data.location;
-      obj.build_id = data.prefs['gecko.buildID'] || "-", // TODO
-      obj.partner_id = data.prefs['distribution.id'] || "-", // TODO
-      obj.profile_age = data.profileage,
-      obj.profile_usage = {total:data.sumMs},
-      obj.addons = {"addons": data.addons},
+
+      // modified per https://bugzilla.mozilla.org/show_bug.cgi?id=1092375
+      obj.build_id = data.prefs['gecko.buildID'] || "-";
+      obj.partner_id = data.prefs['distribution.id'] || "-";
+      obj.profile_age = data.profileageCeilingCapped365; // capped at 365.  rounded
+      obj.profile_usage = {total30:data.sumMs30, useddays30: data.useddays30};
+
+      obj.addons = {"addons": data.addons};
       obj.extra = {
         crashes: data.crashes,
-        prefs: data.prefs,
-        engage: obj.flow_links
+        //prefs: data.prefs,  // dropped per https://bugzilla.mozilla.org/show_bug.cgi?id=1092375
+        engage: obj.flow_links,
+        numflows: myprefs.numflows
       };
 
       obj.experiment_version = data.addonVersion;

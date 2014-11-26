@@ -11,5 +11,6 @@
   "main": "lib/index.js",
   "id": "heartbeat-telemetry-experiment-1@mozilla.com",
   "name": "heartbeat-telemetry-experiment-1",
-  "icon": "data/icons/Heartbeat-icon.png"
+  "icon": "data/icons/Heartbeat-icon.png",
+  "tests": "test"
 }

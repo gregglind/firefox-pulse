@@ -44,5 +44,5 @@
 
 ## Example build  (34+)
 ```
-cfx run -b /Applications/FirefoxAurora.app/ --static-args '{"delay": 100, "armnumber":5, "phonehome": true}' #  for example
+cfx run -b /Applications/FirefoxAurora.app/ --static-args '{"delay": 100, "armnumber":5, "phonehome": true, "lateenough": true}' #  for example
 ```

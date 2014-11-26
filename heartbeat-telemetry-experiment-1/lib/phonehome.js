@@ -66,7 +66,8 @@ let annotate = exports.annotate = function (obj) {
       obj.addons = {"addons": data.addons},
       obj.extra = {
         crashes: data.crashes,
-        prefs: data.prefs
+        prefs: data.prefs,
+        engage: obj.flow_links
       };
 
       obj.experiment_version = data.addonVersion;
@@ -158,6 +159,7 @@ let phonehome = exports.phonehome = function(dataObject, options){
   // this becomes a promise.
   dataObject = annotate(dataObject);
 
+  // remember, validate strips extra fields silently!
   let wrap_valid = (d) => {
     try {
       return (validate(d)); // may turn into a reject.

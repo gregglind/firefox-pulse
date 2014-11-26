@@ -51,7 +51,7 @@ let flow_base = {
   //// is this real?
   //"is_test": vboolean('is_test') //true
 
-  "flow_links": []  // array of (ts, id)  // TODO
+  "flow_links": [],  // array of (ts, id)  // TODO
 };
 
 let _current;
@@ -92,8 +92,10 @@ let revive = exports.revive = function () {
   _current = JSON.parse(myprefs.current);
 };
 
-let link = exports.link = function (link) {
-  _current.flow_links.push([Date.now(), link]);
+//
+let link = exports.link = function (action, whichpage) {
+  console.log("linking at flow!");
+  _current.flow_links.push([Date.now(), action, whichpage]);
   persist();
 };
 
@@ -105,13 +107,17 @@ let rate = exports.rate = function (n) {
 // module getter
 let current = exports.current = () => _current;
 
+// only accept 'first set' for these.
 ["began", "offered", "voted", "engaged"].forEach(function (k) {
   exports[k] = function (ts) {
     provePhaseReady(k); //
+    console.log("flow", k);
     let key = "flow_" + k + "_ts";
     if (key in _current) {
-      _current[key] = ts || Date.now();
-      persist();
+      if (_current[key] === 0) {
+        _current[key] = ts || Date.now();
+        persist()
+      }
     } else {
       throw "Bad key in current flow: " + key;
     }

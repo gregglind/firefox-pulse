@@ -5,6 +5,7 @@
 console.log("uitest script!");
 var $ = require("jquery");
 
+/*
 if (self.port === undefined) {
   self.port = require("./fake-port").port;
 }
@@ -13,24 +14,14 @@ if (self.port === undefined) {
 if (self.options === undefined) {
   console.log("using fake ui");
   self.options = {
-    question: {question: "Rate Firefox",
-      rating: 1,
-      outof: 5,
-      alias: 'rate-firefox'
-    },
-    flowid: 1234
   };
 }
+*/
 
 (function ($) {
   console.log("after page!");
-
-  $("a").click(function (evt){
-    var id;
-    var out;
-    id = $(evt.target).closest('a').attr("id");
-    out = $.extend(true, self.options, {link: id});
-    self.port.emit("link", out);
+  $("*[data-ga-action]").click(function (evt){
+    var action = $(this).data().gaAction;
+    self.port.emit("link", action);
   });
-
 })($);

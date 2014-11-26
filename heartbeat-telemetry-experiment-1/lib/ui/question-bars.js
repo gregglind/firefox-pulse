@@ -58,10 +58,14 @@ const os = require('sdk/system/runtime').OS;
 const notification = require("./notification");
 
 const flow = require("flow");
+const phonehome = require("phonehome");
+
+let afterPage = require("./after-page");
 
 const sss = require("stylesheetservice");
 
 sss.register(sss.getURI(data.url("icons/iconstyles.css")));
+
 
 // utils
 let hoverize = function (el, fhover, foff) {
@@ -220,7 +224,10 @@ let mikestyle = {
   }
 };
 
-let baseEngageUrl = data.url("pages/");
+
+//let baseEngageUrl = data.url("pages/");
+//let baseEngageUrl = "https://input.allizom.org/static/hb/experiment1/";
+let baseEngageUrl = "file:///Users/glind/gits/fjord/fjord/heartbeat/static/hb/experiment1/";
 // TODO, plumb the links
 // TODO, query arg out interesting stuff?
 //
@@ -237,29 +244,29 @@ let openEngagementPage = exports.openEngagementPage = function(which, score, qar
     neutral: urlize("neutral.html", urlargs)
   };
 
+  let mood;
+  let openpage = (url) => tabs.open({url: url, inBackground: true});
   switch (which) {
     case "nps":
-      if (score <=6) {
-        tabs.open({url: urls.sad, inBackground: true});
-      } else if (score <= 8) {
-        tabs.open({url: urls.neutral, inBackground: true});
-      } else {
-        tabs.open({url: urls.happy, inBackground: true});
-      }
+      if (score <=6) mood = "sad";
+      else if (score <= 8) mood = "neutral";
+      else mood = "happy";
       break;
     case "stars":
-      if (score <=3) {
-        tabs.open({url: urls.sad, inBackground: true});
-      } else if (score === 4) {
-        tabs.open({url: urls.neutral, inBackground: true});
-      } else {
-        tabs.open({url: urls.happy, inBackground: true});
-      }
+      if (score <=3) mood = "sad";
+      else if (score <= 4) mood = "neutral";
+      else mood = "happy";
       break;
-
     default:
       throw "No engagement targets for " + which;
   }
+
+  let url = urls[mood];
+  //console.log(url,afterPage.afterPageRe, afterPage.afterPageRe.test(url) )
+  if (!afterPage.afterPageRe.test(url)) { throw "after page url wont be modded: " + url }
+
+  afterPage.factory({mood: mood}); // page mod
+  openpage(url);
 };
 
 
@@ -286,7 +293,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   let conf = defaultBarConfig[which];
   conf = extend({}, conf, overrides);
 
-  console.log('makeNotice', conf);
+  //console.log('makeNotice', conf);
   let iconsByAlias = {
     question: "chrome://global/skin/icons/question-large.png",
     heart: data.url("icons/heartbeat-icon.png"),
@@ -477,7 +484,11 @@ let makeNotice = function (which, flowid, bartype, overrides) {
     }
     let delay = overrides.delay || conf.delay || 1500;
 
+    flow.voted();
     flow.rate(rating);
+    flow.persist();
+    phonehome.phonehome();
+
     openEngagementPage(which, rating, {flowid: flowid, armname: conf.armname});
     win.setTimeout(() => {
       messageImage.classList.remove('animatetwice',"pulse");

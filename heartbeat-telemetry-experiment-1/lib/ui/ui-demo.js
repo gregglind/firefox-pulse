@@ -33,7 +33,7 @@ let P = pageMod.PageMod({
   onAttach: function(worker) {
     worker.port.on("ui", function (which, q) {
       console.log("which ui:", which, q);
-      ui[which](q, flowid).go(); // like a fake arm
+      ui[which](q, flowid); // like a fake arm
     });
   }
 });

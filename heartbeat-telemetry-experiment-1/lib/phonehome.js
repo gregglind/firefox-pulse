@@ -13,12 +13,19 @@
 "use strict";
 
 const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
 const request = require("sdk/request");
 const { extend } = require("sdk/util/object");
 const myprefs = require("sdk/simple-prefs").prefs;
 
 const personinfo = require("personinfo");
+
+const { validate } = require("upload-validate");
+const flow = require("flow");
+
+/** POST API information for Heartbeat
+  * http://fjord.readthedocs.org/en/latest/hb_api.html
+  */
+
 
 /** add common fields such as timestamp, userid, etc. to event data
   * fields will be appending in newkey 'extra', which is a dict.
@@ -28,29 +35,47 @@ const personinfo = require("personinfo");
   *
   */
 let annotate = exports.annotate = function (obj) {
-  let { promise, resolve } = defer();
-  // experiment arm?
-  // etc!
-  // addon version?
-  // person id?
-  // do they have abp?
-  // etc?
-  obj.extra = {};
-  for (let k in myprefs) {
-    obj.extra[k] = myprefs[k];
-  }
-  //
-  obj.extra.ts = Date.now();
+  let { promise, resolve } = promises.defer();
+  obj = extend({}, flow.current(), obj);
+
+  obj.person_id = myprefs.person_id;
+  obj.survey_id = myprefs.survey_id;
+  obj.variation_id = myprefs.armname;
+
+  obj.response_version = 1;
+  obj.updated_ts = Date.now();
+
 
   personinfo.getData().then(
     function (data) {
-      obj.extra = extend({}, obj.extra, data);
+      //obj = extend({}, obj, data);
+      console.log("OBJECT");
+      console.log(JSON.stringify(obj,null,2));
+
+//rint("Running tests on " + system.name + " " + system.version + "/Gecko " + system.platformVersion + " (" + system.id + ") under " +
+//                 system.platform + "/" + system.architecture + ".\n");
+
+      obj.platform = data.os; // will be better
+      obj.channel = data.updateChannel;
+      obj.version = data.fxVersion;
+      obj.locale = data.location;
+      obj.build_id = data.prefs['gecko.buildID'] || "-", // TODO
+      obj.partner_id = data.prefs['distribution.id'] || "-", // TODO
+      obj.profile_age = data.profileage,
+      obj.profile_usage = {total:data.sumMs},
+      obj.addons = {"addons": data.addons},
+      obj.extra = {
+        crashes: data.crashes,
+        prefs: data.prefs,
+        engage: obj.flow_links
+      };
+
+      obj.experiment_version = data.addonVersion;
       resolve(obj);
     }
   );
   return promise;
 };
-
 
 /** base configuration of the phonehome module / function
   *
@@ -58,16 +83,15 @@ let annotate = exports.annotate = function (obj) {
 let config = exports.config  = {
   phonehome: false,   // will it send?
   testing: true,         // append on a flag?
-  url: "https://testpilot.mozillalabs.com/submit/" + "pulse-uptake-experiment",
-  annotate: true
+  url: "https://input.mozilla.org/api/v2/hb/",
+  //url: "https://testpilot.mozillalabs.com/submit/" + "pulse-uptake-experiment",
 };
 
-/** Send data to test pilot / bagheera
+/** Send data to Heartbeat Input
   *
-  * note: called mostly by sendEvent.
   *
   * args:
-  *    dataObject:  POJO with event related keys
+  *    dataObject:  POJO with event related keys, validates
   *    options:  same keys as `config`, temporarily overriding them.
   *
   * promises:
@@ -77,7 +101,7 @@ let config = exports.config  = {
   * Note 1: if (!options.phonehome)), return Request instead
   *
   * Note 2: Success will be
-  *   - statusCode = 201 (bagheera)
+  *   - statusCode = 201 (input heartbeat)
   *   - statusCode = 0 (local file)
   *   - statusCode = ??? (other systems, mostly 200)
   *
@@ -86,16 +110,22 @@ let config = exports.config  = {
   *         and will die silently (?) on rejection.
   **/
 let phonehome = exports.phonehome = function(dataObject, options){
+  dataObject = dataObject || {};
+
   options = extend({}, config, options);
 
-  let { promise, resolve } = defer();
+  let { promise, reject, resolve } = promises.defer();
   function requestCompleted(which, cb, response) {
-    console.log("REQUEST COMPLETE", which, response.status);
-    cb();
+    // worth catching errors here?  If so, so what to do next?
+    // TODO check responses
+    console.log("REQUEST COMPLETE", which, response.status, response.text);
+    cb(response);
   }
 
   if (options.testing) {
-    dataObject.testing = true;
+    dataObject.is_test = true;
+  } else {
+    dataObject.is_test = false;
   }
 
   let send = function (dataObject) {
@@ -107,13 +137,13 @@ let phonehome = exports.phonehome = function(dataObject, options){
       */
     var XMLReqTP = new request.Request({
       url: options.url,
-      headers: {},
-      onComplete: requestCompleted.bind(null,"TP", resolve),
+      headers: {'Accept': 'application/json; indent=4'},
+      onComplete: requestCompleted.bind(null,"HeartbeatInput", resolve),
       content: JSON.stringify(dataObject),
-      contentType: "application/json",
+      contentType: "application/json"
     });
 
-    console.log("TP REQUESTS");
+    console.log("HeartbeatInput REQUESTS");
     console.log(JSON.stringify(dataObject,null,2));
 
     if (options.phonehome) {
@@ -127,16 +157,23 @@ let phonehome = exports.phonehome = function(dataObject, options){
   };
 
   // this becomes a promise.
-  if (options.annotate) {
-    dataObject = annotate(dataObject);
-  } else {
-    dataObject = promises.resolve(dataObject);
-  }
+  dataObject = annotate(dataObject);
 
-  dataObject.then(send).then(
-    null,
-    console.error);
+  // remember, validate strips extra fields silently!
+  let wrap_valid = (d) => {
+    try {
+      return (validate(d)); // may turn into a reject.
+    } catch (exc) {
+      console.log(exc);
+      reject(exc);
+    }
+  };
+
+  dataObject.
+    then(wrap_valid).
+    then(send).then(
+      null,
+      console.error);
 
   return promise;
-
 };

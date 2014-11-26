@@ -1,15 +1,16 @@
 {
-    "license": "MPL",
-    "description": "Test Pilot Study:  Variations in UI for determining response rate",
-    "engines": {
-        "firefox": ">=32.0a1"
-    },
-    "author": "Gregg Lind <glind@mozilla.com>",
-    "title": "Firefox Pulse Response Rate Test (Test Pilot)",
-    "homepage": "https://github.com/gregglind/firefox-pulse",
-    "version": "1.0.4",
-    "main": "lib/index.js",
-    "id": "pulse-response-rate-ui-test@testpilot.mozilla.com",
-    "name": "pulse-response-rate-ui-test",
-    "icon": "data/icons/icon-b.png"
+  "license": "MPL",
+  "description": "Telemetry Experiment:  Heartbeat Experiment 1.",
+  "engines": {
+    "firefox": ">=34.0"
+  },
+  "author": "Gregg Lind <glind@mozilla.com>",
+  "title": "Heartbeat Telemetry Experiment 1",
+  "homepage": "https://github.com/gregglind/firefox-pulse",
+  "version": "2.0.0",
+  "main": "lib/index.js",
+  "id": "heartbeat-telemetry-experiment-1@mozilla.com",
+  "name": "heartbeat-telemetry-experiment-1",
+  "icon": "data/icons/Heartbeat-icon.png",
+  "tests": "test"
 }

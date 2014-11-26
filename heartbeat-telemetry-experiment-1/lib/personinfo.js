@@ -8,19 +8,15 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global */
+/*global require, console, exports */
 
 "use strict";
 
 const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
+const { defer } = promises;
 const { extend } = require("sdk/util/object");
 
-const self = require("sdk/self");
-
 const genPrefs = require("sdk/preferences/service");
-const prefs = require("sdk/simple-prefs").prefs;
-const system = require("sdk/system");
 
 const FHR = require("./FHR");
 const micropilot = require("micropilot-trimmed");
@@ -28,7 +24,6 @@ const micropilot = require("micropilot-trimmed");
 function getAddonVersion(){
   return require("sdk/self").version;
 }
-
 
 // parses the fhr 'data' object and calls the callback function when the result is ready.
 // callback(profileAgeDays, sumMs)
@@ -69,7 +64,7 @@ function parseFHRpayload (data) {
       if (date >= aMonthAgoDate && date < todayDate) {
         if (days[key]["org.mozilla.appSessions.previous"]) {
           if (days[key]["org.mozilla.appSessions.previous"].cleanActiveTicks) {
-            days[key]["org.mozilla.appSessions.previous"].cleanActiveTicks.forEach(function (elm){
+            days[key]["org.mozilla.appSessions.previous"].cleanActiveTicks.forEach(function (elm) {
                 sumMs = sumMs + elm * 5 * 1000;
             });
           }
@@ -77,27 +72,22 @@ function parseFHRpayload (data) {
       }
     }
   }
-  console.log("sumMs", sumMs);
   return {profileage: profileAgeDays, sumMs: sumMs, crashes: crashes};
 }
 
 
 function transformFhrData () {
   let {promise, resolve} = defer();
-
   console.log("starting to get FHR data");
-
   if (!FHR.reporter) resolve({});
 
-  console.log("getting FHR data");
-    FHR.reporter.onInit().then(function() {
-      return FHR.reporter.collectAndObtainJSONPayload(true);
-    }).then(function(data) {
-      resolve(parseFHRpayload(data));
-    });
+  FHR.reporter.onInit().then(function() {
+    return FHR.reporter.collectAndObtainJSONPayload(true);
+  }).then(function(data) {
+    resolve(parseFHRpayload(data));
+  });
   return promise;
 }
-
 
 // alas, has to be async, stupid addons!
 let getData = exports.getData = function () {
@@ -111,28 +101,21 @@ let getData = exports.getData = function () {
       "privacy.donottrackheader.value",
       "places.history.enabled",
       "browser.tabs.remote",
-      "browser.tabs.remote.autostart"].forEach(function(k) {
+      "browser.tabs.remote.autostart",
+      "distribution.id",
+      "gecko.buildID"
+      ].forEach(function(k) {
         d.prefs[k] = genPrefs.get(k);
       });
   };
 
-
   micropilot.snoop().then(
-  function (data) {
-    d = data;
-  }).then(
-  function () {
-    d.addonVersion = getAddonVersion();
-  }).then(
-  transformFhrData).then(  // FHR
-  function (transformed) {
-    //console.log(d);
-    //console.log(transformed);
-    //console.log(d, transformed);
-    d = extend({},d,transformed);
-  }).then(
-  annotatePrefs).then(
-  function () {resolve(d);}
-  );
+  (data) => d = data).then(
+  () => d.addonVersion = getAddonVersion()).then(
+  transformFhrData).then(  // FHR, then transform it
+  (transformed) => d = extend({},d,transformed)).then(
+  annotatePrefs).then( // get some good prefs
+  () =>resolve(d));
+
   return promise;
 };

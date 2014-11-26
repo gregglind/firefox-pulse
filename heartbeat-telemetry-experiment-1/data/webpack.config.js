@@ -9,7 +9,6 @@
 module.exports = {
 	//context: __dirname + "/app",
 	entry: {
-		question: "./src/question",
         uitest:  "./src/ui-demos",
         after:  "./src/after"
 

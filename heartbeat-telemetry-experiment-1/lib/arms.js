@@ -73,16 +73,19 @@ const questions = exports.questions = [
     qtype: "stars",
     msg: "Please Rate Firefox",
     alias: "stars-polite",
+    max_score: 5
   },
   {
     qtype: "stars",
     msg: "Rate Firefox",
-    alias: "stars-direct"
+    alias: "stars-direct",
+    max_score: 5,
   },
   {
     qtype: "nps",
     msg: "How likely are you to recommend Firefox to others?",
-    alias: "nps-standard"
+    alias: "nps-standard",
+    max_score: 10
   }
 ];
 

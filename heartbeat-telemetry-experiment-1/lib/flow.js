@@ -81,6 +81,7 @@ let create = exports.create = function (flow_id, Q) {
   _current.flow_id = flow_id;
   _current.question_text = Q.msg;
   _current.question_id = Q.alias;
+  _current.max_score = Q.max_score;
 };
 
 let persist = exports.persist = function () {

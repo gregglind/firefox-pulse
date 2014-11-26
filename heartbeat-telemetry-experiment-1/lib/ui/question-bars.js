@@ -227,7 +227,7 @@ let mikestyle = {
 
 //let baseEngageUrl = data.url("pages/");
 //let baseEngageUrl = "https://input.allizom.org/static/hb/experiment1/";
-let baseEngageUrl = "file:///Users/glind/gits/fjord/fjord/heartbeat/static/hb/experiment1/";
+let baseEngageUrl = "https://input.mozilla.org/static/hb/experiment1/";
 // TODO, plumb the links
 // TODO, query arg out interesting stuff?
 //

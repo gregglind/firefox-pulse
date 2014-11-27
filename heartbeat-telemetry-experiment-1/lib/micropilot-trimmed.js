@@ -9,7 +9,8 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global */
+/*global exports, require*/
+
 "use strict";
 
 
@@ -24,22 +25,11 @@ exports.metadata = {
 
 /*!*/
 const { Cu } = require("chrome");
-
 const { defer } = require('sdk/core/promise');
-
 const myprefs = require("sdk/simple-prefs").prefs;
 const xa = require("sdk/system/xul-app");
 const prefs = require('sdk/preferences/service');
 const runtime = require('sdk/system/runtime');
-
-/** log IFF `prefs.micropilot` is set.
- *
- * @return undefined
- * @name microlog
- */
-let microlog = exports.microlog = function () {
-  if (myprefs.micropilotlog) console.log.apply(null, arguments);
-};
 
 
 /** gather general user data, including addons, os, etc.
@@ -47,7 +37,7 @@ let microlog = exports.microlog = function () {
  * Properties:  appname, location, fxVersion, os, updateChannel, addons list
  * @return promise promise of userdata
  * @name snoop
- * @memberOf main
+ * @memberOf micropilot-trimmed.js
  */
 let snoop = exports.snoop = function () {
   let { promise, resolve } = defer();
@@ -59,7 +49,7 @@ let snoop = exports.snoop = function () {
   u.appname = xa.name;
   u.location = prefs.get(LOCALE_PREF);
   u.fxVersion = xa.version;
-  u.os = runtime.os;
+  u.os = runtime.OS;
   u.updateChannel = prefs.get(UPDATE_CHANNEL_PREF);
 
   let { AddonManager } = Cu.import("resource://gre/modules/AddonManager.jsm");
@@ -72,6 +62,7 @@ let snoop = exports.snoop = function () {
       });
       u.addons.push(o);
     });
+    console.log(u);
     resolve(u);
   });
   return promise;
@@ -82,13 +73,13 @@ let snoop = exports.snoop = function () {
  *
  * @param {string} id addon id
  * @return promise (sdk/adddon/installer).uninstall
- * @memberOf main
+ * @memberOf micropilot-trimmed
  * @name killaddon
  */
 let killaddon = exports.killaddon = function (id) {
   id = id === undefined ? require('sdk/self')
     .id : id;
-  microlog("attempting to remove addon:", id);
+  console.log("attempting to remove addon:", id);
   return require("sdk/addon/installer")
     .uninstall(id);
 };

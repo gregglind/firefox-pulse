@@ -53,13 +53,17 @@ help:
 	@echo "$$HELPDOC"
 
 deps:
-	@# blushproof
-	@#curl --create-dirs https://raw.githubusercontent.com/mozilla/blushproof/master/lib/bpUtil.js > lib/thirdparty/blushproof/bpUtil.js
-	@#curl --create-dirs https://raw.githubusercontent.com/mozilla/blushproof/master/lib/blushlist.js > lib/thirdparty/blushproof/blushlist.js
-	@# wget micropilot
-	@#curl https://raw.github.com/gregglind/micropilot/dev/lib/micropilot.js > lib/micropilot.js
-	@# wget bwclarks thing
-	@#curl https://raw.github.com/gregglind/browser-search-engine/master/lib/browser-search-engine.js > lib/browser-search-engine.js
+	cd $(TOP)/data && \
+	npm install && \
+	./node_modules/webpack/bin/webpack.js
+
+# for telemetry experiment
+telemetry-experiment: deps
+	cd $(TOP)
+	cfx xpi \
+	  --static-args='{"phonehome": true, "testing": false}' \
+	  --templatedir ext-template/ \
+	  --output-file addons/heartbeat-telemetry-experiment-1-type-128.xpi
 
 # this is the addon for safe distribution
 addon: deps

@@ -26,44 +26,34 @@ var { Class, mix } = require('sdk/core/heritage');
 
 const validNumber = { is: ['number', 'undefined', 'null'] };
 
-
-
-
 // https://developer.mozilla.org/en/XUL/notificationbox#Notification_box_events
 // bottom:  http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser-data-submission-info-bar.js
 /** expose the notification box (banner) for a window */
-var notificationbox = exports.notificationbox = function (w, bottom){
-  // TODO, this is SO MESSED UP.  GRL doesn't get xul vs most
-  // recent vs whatever.
+var notificationbox = exports.notificationbox = function (w, which){
   w = w || getMostRecentBrowserWindow();
-  //let thistab = w.gBrowser.mCurrrentBrowser; // undefined?
-  if (bottom) {
-    w = w || getMostRecentBrowserWindow();
-    let nb = w.gDataNotificationInfoBar._notificationBox;
-    console.log(nb);
-    return nb;
-  } else {
-    var wm = chrome.Cc["@mozilla.org/appshell/window-mediator;1"]
-                     .getService(chrome.Ci.nsIWindowMediator);
-    var win = wm.getMostRecentWindow("navigator:browser");
-    //return win.document.getElementById("global-notificationbox"); // bottom
-    let nb = win.document.getElementById("high-priority-global-notificationbox");
-    if (nb) return nb // 33+?
-    else {
-      return win.gBrowser.getNotificationBox();
-    }
+  switch (which) {
+    case "bottom-global":
+      w = w || getMostRecentBrowserWindow();
+      let nb = w.gDataNotificationInfoBar._notificationBox;
+      console.log(nb);
+      return nb;
+    case "top-global":
+      return w.document.getElementById("high-priority-global-notificationbox");
+    case "top-single":
+      return w.gBrowser.getNotificationBox();
+    default:
+      throw "which must be [bottom-global|top-global|top-single]"
   }
 };
 
-/* callback should register on AlertShow, AlertClose, TODO!
 
-    see:  aboutRights; telemetry notifications (good examples) live at:
-    at http://mxr.mozilla.org/mozilla-central/source/browser/components/nsBrowserGlue.js
-
-    TODO... hideclose?
-
-    Note:  in desktop fx, there is no event fired on close.  We fake this.
-*/
+/** callback should register on AlertShow, AlertClose, TODO!
+  *
+  *    see:  aboutRights; telemetry notifications (good examples) live at:
+  *    at http://mxr.mozilla.org/mozilla-central/source/browser/components/nsBrowserGlue.js
+  *
+  *    Note:  in desktop fx, there is no event fired on close.  We fake this.
+  */
 var banner = exports.banner =  Class({
   extends:  EventTarget,
   initialize: function initialize(options) {
@@ -113,32 +103,32 @@ var banner = exports.banner =  Class({
 });
 
 
-/*
-    notification box buttons with standard names.
-
-    TODO... allow for translations... browserBundle.GetStringFromName
-
-    buttons just get a label, not an image, alas!
-
-    Example of usage:
-
-        banner({msg:"I want to do something", buttons=[nbButtons.yes(
-            {callback: function(nb,b) {doSomethingInAddonScope()})
-            ]
-        })
-
-    Don't like the default labels?  Override them!
-
-        banner({msg:"if you want this...", buttons=[nbButtons.yes(
-            {label: "click here"})
-            ]
-        })
-
-    Or:
-
-        banner({msg: "want to", buttons=[nbButtons['click here?']()]});
-
-*/
+/**
+  * notification box buttons with standard names.
+  *
+  * TODO... allow for translations... browserBundle.GetStringFromName
+  *
+  * buttons just get a label, not an image, alas!
+  *
+  * Example of usage:
+  *
+  *     banner({msg:"I want to do something", buttons=[nbButtons.yes(
+  *         {callback: function(nb,b) {doSomethingInAddonScope()})
+  *         ]
+  *     })
+  *
+  * Don't like the default labels?  Override them!
+  *
+  *     banner({msg:"if you want this...", buttons=[nbButtons.yes(
+  *         {label: "click here"})
+  *         ]
+  *     })
+  *
+  * Or:
+  *
+  *     banner({msg: "want to", buttons=[nbButtons['click here?']()]});
+  *
+  */
 let nbButtons = exports.nbButtons = {
 };
 

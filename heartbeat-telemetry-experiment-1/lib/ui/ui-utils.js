@@ -27,7 +27,10 @@ exports.openAfterPage = function (data) {
       url: self.data.url("after.html"),
       inBackground: true
     });
-  });
+  }).then(
+    null,
+    console.error
+  );
 };
 
 

@@ -77,7 +77,7 @@ if (self.options === undefined) {
     var $label = $('<label />').
       attr("id", "label-" + id).
       attr("for", id).
-      text(k.question);
+      text([k.msg, k.alias, k.qtype].join(" :: "));
 
     $label.click(function() {
        var labelID = $(this).attr('for');

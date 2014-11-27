@@ -8,6 +8,14 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global require, exports, log */
+/*global require, exports, console*/
 
 "use strict";
+
+let { Cu } = require("chrome");
+
+const { Services } = Cu.import("resource://gre/modules/Services.jsm");
+
+exports.hasE10s = function () {
+  return Services.appinfo.browserTabsRemoteAutostart;
+};

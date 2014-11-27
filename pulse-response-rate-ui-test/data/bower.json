@@ -1,0 +1,35 @@
+{
+  "name": "dependencies",
+  "version": "0.0.0",
+  "homepage": "https://github.com/gregglind/firefox-pulse",
+  "authors": [
+    "Gregg Lind <gregg.lind@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "jquery-ui": "~1.11.1"
+  },
+  "install" : {
+    "path" : "src/thirdparty",
+    "sources" : {
+      "jquery" : [
+        "bower_components/jquery/dist/jquery.js"
+      ],
+      "jquery-ui" : [
+        "bower_components/jquery-ui/jquery-ui.js",
+        "bower_components/jquery-ui/themes/start/jquery-ui.css"
+      ],
+      "lodash": [
+      ]
+    }
+  }
+}

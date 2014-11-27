@@ -8,32 +8,78 @@
   indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
   globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
 
-/*global */
+/*global exports, require, console*/
 
 "use strict";
 
-var self = require('sdk/self');
+const promises = require("sdk/core/promise");
+const { defer, resolve } = promises;
+const self = require('sdk/self');
 
 const experiment = require("experiment");
 const phonehome = require("phonehome");
 const arms = require("arms");
 const micropilot = require("micropilot-trimmed");
 
-const promises = require("sdk/core/promise");
-const { defer, resolve } = promises;
+const { emit } = require('sdk/event/core');
+const apiUtils = require("sdk/deprecated/api-utils");
+
+const { hasE10s } = require("e10s");
+
+if (hasE10s()) {
+  micropilot.killaddon();
+}
 
 
+let validateStaticArgs = function (staticArgs) {
+  let rules = {
+    showui: {is: ['boolean']},
+    reset: {is: ['boolean']},
+    phonehome: {is: ['boolean']},
+    testing: {is: ['boolean']},
+    delay: {is: ['number'], ok: (x)=> x>0, msg: "delay must be non-neg"}, // pos!
+    armnumber: {is: ['number'],
+      ok: (x)=> (x>=0) && (x < arms.ARMS().length),
+      msg: "armnumber must be int in [0,"+ (arms.ARMS().length-1) + "]"},
+    killafter:  {is: ['number']},
+    lateenough: {is: ['boolean']}
+  };
+
+  Object.keys(staticArgs).forEach(function (k){
+    if (k in rules) {
+      let r = {};
+      let o = {};
+      o[k] = staticArgs[k];
+      r[k] = rules[k];
+      apiUtils.validateOptions(o, r);
+    } else {
+      throw "staticArg option unknown: " + k;
+    }
+  });
+};
+
+/**
+  *
+  * allowed options
+  * - showui
+  * - reset
+  * - phonehome
+  * - testing
+  * - delay  (until showing question)
+  * - killafter
+  * - lateenough - boolean, debug flag
+  *
+  */
 let main = exports.main = function (options, callback) {
-  console.log("running");
-  // args
+
   options = options.staticArgs || {};
+
+  validateStaticArgs(options);
 
   if (options.showui) {
     require("./ui/ui-demo");
     let tabs = require("sdk/tabs");
-    //tabs.open(self.data.url(""));
     tabs.open(self.data.url("ui-demo.html"));
-    //tabs.open(self.data.url("question.html"));
   }
 
   if (options.reset) {
@@ -53,7 +99,9 @@ let main = exports.main = function (options, callback) {
     arms.regenerate();
   }
 
+  // options.lateenough # handled down below
 
+  // decide and implement arm
   let armnumber; // undef;
 
   if (options.armnumber !== undefined) {
@@ -83,27 +131,27 @@ let main = exports.main = function (options, callback) {
     return promise;
   };
 
-  let die = dontdie;
+  let maybeDieIfTooOld = dontdie;
   if (killafter) {
-    die = yesdie;
+    maybeDieIfTooOld = yesdie;
   }
 
-  // upgrades
-  //
+  // on upgrade?
+  // (no special code)
+
 
   // standard sequence - a la a unit test
-  let setup;
+  let setupOrRevive;
 
-  if (experiment.isSetup()) {
-    setup = resolve(experiment.revive()); // first time!
+  if (experiment.isSetup()) {  //i.e., was it *ever* configured.
+    setupOrRevive = resolve(experiment.revive());
   } else {
-    setup = experiment.firstStartup(armnumber);  // else!
+    setupOrRevive = experiment.firstStartup(armnumber);  // first time only
   }
 
-
-  let run_if_not_ran = function () {
+  let runIfNotAlreadyRan = function () {
     if (experiment.ran()) {
-      console.log("already ran");
+      console.log("already ran");  // nothing more to do.
       resolve(true);
     } else {
       console.log("will run");
@@ -111,15 +159,34 @@ let main = exports.main = function (options, callback) {
     }
   };
 
-  setup.then(   // all side effects.
-  die).then(
-  run_if_not_ran).then(   // - run if not ran
-  ).then(
-  ).then(
-  null, console.error // all errors;
+  let maybeOverrideLateEnough = function () {
+    if (options.lateenough) {
+      console.log("want to override lateenough");
+      emit(experiment.observer, "lateenough");  //sets pref by side effect
+    }
+  };
+
+  setupOrRevive.then(   // all side effects.
+  maybeDieIfTooOld).then(  // if needed
+  maybeOverrideLateEnough).then(  // because setup() resets(), so has to come after
+  runIfNotAlreadyRan).then(   // - run if not ran
+    null,
+    console.error // all errors;
   );
 
   // - teardown
+  // (no teardown)
 };
 
-// teardown
+
+// on unload? -- nothing to do?  Should we clear prefs?
+
+
+exports.onUnload = function (reason) {
+  if ((reason === "disable") || reason === "uninstall") {
+    experiment.reset();
+  }
+};
+
+
+

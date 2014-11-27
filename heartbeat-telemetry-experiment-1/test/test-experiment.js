@@ -20,6 +20,9 @@ let triggers = require('triggers');
 let arms = require('arms');
 let experiment = require('experiment');
 
+const { emit } = require('sdk/event/core');
+
+
 let utils = require('./utils-for-testing');
 
 let sum = (array) => {
@@ -51,6 +54,7 @@ exports['test experiment everyRun starts a flow'] = function(assert, done) {
     done();
   });
   experiment.setupArm();
+  emit(experiment.observer,"lateenough");  // lie!  like a rug!
   experiment.everyRun(); // async, should trigger flow.
 };
 
@@ -60,7 +64,7 @@ exports['test experiment firstStartup sets data'] = function(assert, done) {
   experiment.firstStartup().then(
   () => {
     assert.ok(myprefs.armnumber !== undefined, "armnumber is set");
-    assert.ok(myprefs.person !== undefined, "person is set");
+    assert.ok(myprefs.person_id !== undefined, "person is set");
     done();
   });
 };

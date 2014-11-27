@@ -17,29 +17,30 @@ const { extend } = require("sdk/util/object");
 
 const pageMod = require("sdk/page-mod");
 
-const ui = require("ui");
+const phonehome = require("phonehome");
+const flow = require("flow");
 
-//let arms = require("arms");
-//console.log(Object.keys(arms));
-//let Q = arms.questions[0];
 
-let Q = {"rating": 3, "outof": 5, "question": "What?"};
-let flowid = 1234;
-
-let phonehome = require("phonehome");
+let afterPageRe = exports.afterPageRe = /.*experiment1\/(happy|sad|neutral)\.html.*/
+// https://input.allizom.org/static/hb/experiment1/happy.html
 
 let factory = exports.factory = function (cso) {
-  cso = cso || extend({},Q, {flowid: flowid, rating: 3}); // fake
   let P = pageMod.PageMod({
-    include: data.url("after.html"),
-    //include: /.*uitest.html/,
+    include: afterPageRe,
     contentScriptFile: data.url('packed-after.js'),
     contentScriptOptions: cso,
+    contentStyle: [],
     onAttach: function(worker) {
-      worker.port.on("link", function (q) {
-        console.log("afterPage link clicked", q);
-        q.msg = "afterPage-link";
-        phonehome.phonehome(q);
+      console.log("ATTACHING factory");
+      worker.port.on("link", function (link) {
+        console.log("afterPage link clicked", link, cso.mood);
+        // engage, set up after links.
+        if (flow.current()) {
+          flow.engaged(); // only first one!  flow.js protects us
+          flow.link(link, cso.mood);
+          flow.persist();
+          phonehome.phonehome();
+        }
       });
     },
     onDetach: function(worker) {

@@ -44,6 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* License: MPL2 */
+
 	"use strict";
 
 	/*global console, self, require*/
@@ -51,59 +53,17 @@
 	console.log("uitest script!");
 	var $ = __webpack_require__(2);
 
-	if (self.port === undefined) {
-	  self.port = __webpack_require__(1).port;
-	}
-
-	// dev garbage
-	if (self.options === undefined) {
-	  console.log("using fake ui");
-	  self.options = {
-	    question: {question: "Rate Firefox",
-	      rating: 1,
-	      outof: 5,
-	      alias: 'rate-firefox'
-	    },
-	    flowid: 1234
-	  };
-	}
-
 	(function ($) {
 	  console.log("after page!");
-
-	  $("a").click(function (evt){
-	    var id;
-	    var out;
-	    id = $(evt.target).closest('a').attr("id");
-	    out = $.extend(true, self.options, {link: id});
-	    self.port.emit("link", out);
+	  $("*[data-ga-action]").click(function (evt){
+	    var action = $(this).data().gaAction;
+	    self.port.emit("link", action);
 	  });
-
 	})($);
 
 
 /***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	console.log("FAKING port");
-
-	var $ = __webpack_require__(2);
-	window.$ = $;
-
-	/* could make this fancier! */
-	exports.port = {
-			on:  console.log.bind(console,"on"),
-			off: console.log.bind(console,"off"),
-			once: console.log.bind(console,"once"),
-			emit: console.log.bind(console,"emit"),
-			removeListener: console.log.bind(console,"removeListener"),
-	    baloney: "this is a fake port!"
-	};
-
-
-
-/***/ },
+/* 1 */,
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -9257,9 +9217,9 @@
 	// https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
 
 	if ( true ) {
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
 			return jQuery;
-		}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 
 

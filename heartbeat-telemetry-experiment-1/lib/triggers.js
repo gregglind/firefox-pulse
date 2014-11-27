@@ -13,23 +13,15 @@
 "use strict";
 
 const tabs = require("sdk/tabs");
-
 const { on, once, off, emit } = require('sdk/event/core');
-
 const timers = require("sdk/timers");
-
 const utils = require("utils");
 
-// map or list to store them all?
+//
 let undo = [];
 
 let reset = exports.reset = function () {
-  // TODO, improve by taking any that return promises and waiting.
-  // not sure how this should work.
-  console.log("clearing!");
   undo.forEach(function (k, i) {
-    console.log('undoing', i);
-    //console.log(k.slice(2));
     (k[0]).apply(k[1], k.slice(2));
   });
 };
@@ -38,14 +30,11 @@ let reset = exports.reset = function () {
   *
   * Args:
   *   consequence_fn: callback. what happens after completion.
-  *     (todo: should these take args?)
   *   extra args: specific to each.
   *
   * Returns:  unclear
   */
 
-
-//
 let tabObs = require('sdk/tabs/observer').observer;
 
 /** (about 500 ms after newtab open)
@@ -59,18 +48,15 @@ let newtab = exports.newtab = function (consequence_fn) {
   let selfRemoving = function selfRemoving () {
     tabObs.removeListener("open", selfRemoving);
     utils.wait(500).then( // the wait is so the new tab can get active
-    () => consequence_fn.apply(tabObs, arguments) // do it
+      () => consequence_fn.apply(tabObs, arguments), // do it,
+      console.error
     );
   };
 
   tabObs.on("open", selfRemoving); // really, it's a 'once'
-  //console.log("48", tabObs._listeners("open").map((x) => console.log(x.toSource())));
 
   let args = [tabObs.removeListener, tabObs, 'open', selfRemoving];
-  //console.log(args.map((x)=>typeof x));
-  //console.log('49', args);
   undo.push(args);
-  //console.log('51',undo);
 };
 
 /** 'wait a bit' triggers */

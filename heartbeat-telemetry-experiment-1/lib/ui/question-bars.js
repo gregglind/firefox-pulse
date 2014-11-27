@@ -270,8 +270,10 @@ let openEngagementPage = exports.openEngagementPage = function(which, score, qar
 };
 
 
-let oneOf = function (choices_array) {
-  return (thing) => choices_array.find(thing) >=0
+let mustBeOneOf = function (name, choices_array, thing) {
+  if (choices_array.indexOf(thing) < 0) {
+    throw name + " must be one of " + choices_array.join("|");
+  }
 };
 
 let mustDefined = (x) => {if (x === undefined) {throw "must be defined";}};
@@ -283,9 +285,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   mustDefined(flowid);
   mustDefined(which);
   mustDefined(bartype);
-  oneOf(["nps", "stars"])(which) || throw "must be nps|stars";
-  oneOf(["top-global", "bottom-global"], bartype);
-
+  mustBeOneOf("which", ["nps","stars"], which);
+  mustBeOneOf("bartype", ["top-global", "bottom-global"], bartype);
 
   // should we mixin the overrides over the conf?
   // TODO, maybe after one more :)

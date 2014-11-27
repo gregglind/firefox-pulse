@@ -17,6 +17,5 @@ let { Cu } = require("chrome");
 const { Services } = Cu.import("resource://gre/modules/Services.jsm");
 
 exports.hasE10s = function () {
-  console.log(Object.keys(Services));
   return Services.appinfo.browserTabsRemoteAutostart;
 };

@@ -79,7 +79,7 @@ let main = exports.main = function (options, callback) {
   if (options.showui) {
     require("./ui/ui-demo");
     let tabs = require("sdk/tabs");
-    tabs.open(self.data.url("ui-demo.html"));  // TODO, fix
+    tabs.open(self.data.url("ui-demo.html"));
   }
 
   if (options.reset) {

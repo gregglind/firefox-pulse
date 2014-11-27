@@ -47,15 +47,13 @@ var notificationbox = exports.notificationbox = function (w, which){
 };
 
 
-/* callback should register on AlertShow, AlertClose, TODO!
-
-    see:  aboutRights; telemetry notifications (good examples) live at:
-    at http://mxr.mozilla.org/mozilla-central/source/browser/components/nsBrowserGlue.js
-
-    TODO... hideclose?
-
-    Note:  in desktop fx, there is no event fired on close.  We fake this.
-*/
+/** callback should register on AlertShow, AlertClose, TODO!
+  *
+  *    see:  aboutRights; telemetry notifications (good examples) live at:
+  *    at http://mxr.mozilla.org/mozilla-central/source/browser/components/nsBrowserGlue.js
+  *
+  *    Note:  in desktop fx, there is no event fired on close.  We fake this.
+  */
 var banner = exports.banner =  Class({
   extends:  EventTarget,
   initialize: function initialize(options) {
@@ -105,32 +103,32 @@ var banner = exports.banner =  Class({
 });
 
 
-/*
-    notification box buttons with standard names.
-
-    TODO... allow for translations... browserBundle.GetStringFromName
-
-    buttons just get a label, not an image, alas!
-
-    Example of usage:
-
-        banner({msg:"I want to do something", buttons=[nbButtons.yes(
-            {callback: function(nb,b) {doSomethingInAddonScope()})
-            ]
-        })
-
-    Don't like the default labels?  Override them!
-
-        banner({msg:"if you want this...", buttons=[nbButtons.yes(
-            {label: "click here"})
-            ]
-        })
-
-    Or:
-
-        banner({msg: "want to", buttons=[nbButtons['click here?']()]});
-
-*/
+/**
+  * notification box buttons with standard names.
+  *
+  * TODO... allow for translations... browserBundle.GetStringFromName
+  *
+  * buttons just get a label, not an image, alas!
+  *
+  * Example of usage:
+  *
+  *     banner({msg:"I want to do something", buttons=[nbButtons.yes(
+  *         {callback: function(nb,b) {doSomethingInAddonScope()})
+  *         ]
+  *     })
+  *
+  * Don't like the default labels?  Override them!
+  *
+  *     banner({msg:"if you want this...", buttons=[nbButtons.yes(
+  *         {label: "click here"})
+  *         ]
+  *     })
+  *
+  * Or:
+  *
+  *     banner({msg: "want to", buttons=[nbButtons['click here?']()]});
+  *
+  */
 let nbButtons = exports.nbButtons = {
 };
 

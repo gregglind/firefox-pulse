@@ -53,8 +53,9 @@ help:
 	@echo "$$HELPDOC"
 
 deps:
-	# should this do the node stuff?
-	# and webpack?
+	cd $(TOP)/data && \
+	npm install && \
+	./node_modules/webpack/bin/webpack.js
 
 # for telemetry experiment
 telemetry-experiment: deps

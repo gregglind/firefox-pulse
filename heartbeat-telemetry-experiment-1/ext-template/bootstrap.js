@@ -4,6 +4,14 @@
 
 // @see http://mxr.mozilla.org/mozilla-central/source/js/src/xpconnect/loader/mozJSComponentLoader.cpp
 
+/*jshint forin:true, noarg:false, noempty:true, eqeqeq:true, bitwise:true,
+  strict:true, undef:true, curly:false, browser:true,
+  unused:true,
+  indent:2, maxerr:50, devel:true, node:true, boss:true, white:true,
+  globalstrict:true, nomen:false, newcap:true, esnext: true, moz: true  */
+
+/*global Components, ChromeWorker */
+
 'use strict';
 
 // IMPORTANT: Avoid adding any initialization tasks here, if you need to do
@@ -31,6 +39,8 @@ const REASON = [ 'unknown', 'startup', 'shutdown', 'enable', 'disable',
                  'install', 'uninstall', 'upgrade', 'downgrade' ];
 
 const bind = Function.call.bind(Function.bind);
+
+Cu.import('resource://gre/modules/devtools/Console.jsm');
 
 let loader = null;
 let unload = null;
@@ -65,9 +75,19 @@ function readURI(uri) {
 // We don't do anything on install & uninstall yet, but in a future
 // we should allow add-ons to cleanup after uninstall.
 function install(data, reason) {}
-function uninstall(data, reason) {}
+function uninstall(data, reason) {
+  // true uninstall cleanup.
 
+}
+
+let gStarted = false; // per felipe gomes, experiments do double startup.
 function startup(data, reasonCode) {
+  console.log("starup", gStarted, data, reasonCode);
+  if (gStarted) {
+   return;
+  }
+  gStarted = true;
+
   try {
     let reason = REASON[reasonCode];
     // URI for the root of the XPI file.

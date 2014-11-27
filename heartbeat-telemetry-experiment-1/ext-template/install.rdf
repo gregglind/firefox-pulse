@@ -8,7 +8,8 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>xulapp@toolness.com</em:id>
     <em:version>1.0</em:version>
-    <em:type>2</em:type>
+    <!-- an experiment -->
+    <em:type>128</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:unpack>false</em:unpack>
 

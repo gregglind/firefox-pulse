@@ -6,7 +6,7 @@ VERSION ?= $(shell python -c "import json;print json.load(open('package.json'))[
 TOP ?= $(shell pwd)
 FOX=Aurora
 NAME=pulse-response-rate-ui-test
-TPNAME=pulse-response-rate-ui-test-testpilot
+TPNAME=heartbeat-response-tp-experiment-2a
 
 ADDONFORTESTNAME=pulse-uptake-test-testaddon
 
@@ -65,25 +65,23 @@ telemetry-experiment: deps
 	  --templatedir ext-template/ \
 	  --output-file addons/heartbeat-telemetry-experiment-1-type-128.xpi
 
-# this is the addon for safe distribution
-addon: deps
-	cd $(TOP)
-	cfx xpi \
-		--static-args='{"showui": true, "reset": true, "testing": true, "phonehome": false, "killafter": false}' \
-		--update-link https://people.mozilla.com/~glind/all/firefox-pulse/$(NAME).xpi \
-		--update-url https://people.mozilla.com/~glind/all/firefox-pulse/$(NAME).update.rdf $(OPTS)
-
 # this is the addon for tp distribution.
 addon-tp: deps
 	echo "addon-tp"
 	cd $(TOP)
-	rm -f $(TPNAME).xpi $(TPNAME).update.rdf
 	cfx xpi \
-		--static-args='{"phonehome": true, "testing": false, "killafter": 604800000}' \
+		--static-args='{"phonehome": true, "testing": false, "extradata": {"testpilot": true}}' \
+	  --output-file addons/$(TPNAME).xpi \
 		--update-link https://testpilot.mozillalabs.com/addons/$(TPNAME).xpi \
 		--update-url https://testpilot.mozillalabs.com/addons/$(TPNAME).update.rdf $(OPTS)
-	mv $(NAME).xpi $(TPNAME).xpi
-	mv $(NAME).update.rdf $(TPNAME).update.rdf
+
+	mv -f *.update.rdf addons/$(TPNAME).update.rdf
+
+# this is the addon for demo distribution
+addon: deps
+	cd $(TOP)
+	cfx xpi \
+	  --static-args='{"delay": 100, "armnumber":5, showui: true, "lateenough": true, "extradata": {"baseaddon": true}}'
 
 # not needed.
 # addon-for-tests: deps
@@ -101,12 +99,12 @@ backup:
 
 deploy-people: addon
 	cd $(TOP)
-	scp -rp $(NAME).update.rdf $(NAME).xpi $(WHO)$(PEOPLEREMOTEMACHINE):$(PEOPLEREMOTEDIR)/
+	scp -rp addons/$(NAME).update.rdf addons/$(NAME).xpi $(WHO)$(PEOPLEREMOTEMACHINE):$(PEOPLEREMOTEDIR)/
 	# would be nice if then curled.
 
 deploy-tp: addon-tp backup
 	cd $(TOP)
-	scp -rp $(TPNAME).update.rdf $(TPNAME).xpi $(WHO)$(REMOTEMACHINE):$(REMOTEDIR)/
+	scp -rp addons/$(TPNAME).update.rdf addons/$(TPNAME).xpi $(WHO)$(REMOTEMACHINE):$(REMOTEDIR)/
 
 
 

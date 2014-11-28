@@ -42,7 +42,8 @@ let validateStaticArgs = function (staticArgs) {
       ok: (x)=> (x>=0) && (x < arms.ARMS().length),
       msg: "armnumber must be int in [0,"+ (arms.ARMS().length-1) + "]"},
     killafter:  {is: ['number']},
-    lateenough: {is: ['boolean']}
+    lateenough: {is: ['boolean']},
+    extradata:  {is: ['object']},
   };
 
   Object.keys(staticArgs).forEach(function (k){
@@ -68,7 +69,7 @@ let validateStaticArgs = function (staticArgs) {
   * - delay  (until showing question)
   * - killafter
   * - lateenough - boolean, debug flag
-  *
+  * - extradata  - fields for adding to the phonehome
   */
 let main = exports.main = function (options, callback) {
 
@@ -92,6 +93,10 @@ let main = exports.main = function (options, callback) {
   }
   if (options.testing !== undefined) {
     phonehome.config.testing = options.testing;  // default: true
+  }
+
+  if (options.extradata !== undefined) {
+    phonehome.config.extraData = options.extradata;  // default: null
   }
 
   if (options.delay !== undefined) {

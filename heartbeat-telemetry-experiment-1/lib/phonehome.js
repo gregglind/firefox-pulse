@@ -12,6 +12,10 @@
 
 "use strict";
 
+
+
+
+
 const promises = require("sdk/core/promise");
 const request = require("sdk/request");
 const { extend } = require("sdk/util/object");
@@ -81,6 +85,7 @@ let config = exports.config  = {
   testing: true,         // append on a flag?
   url: "https://input.mozilla.org/api/v2/hb/",
   //url: "https://testpilot.mozillalabs.com/submit/" + "pulse-uptake-experiment",
+  extraData:  null
 };
 
 /** Send data to Heartbeat Input
@@ -150,6 +155,15 @@ let phonehome = exports.phonehome = function(dataObject, options){
   // this becomes a promise.
   dataObject = annotate(dataObject);
 
+  // or things like testpilot and such.
+  let addExtra = function (dataObject) {
+    if (options.extraData) {
+      dataObject.extra = extend({}, dataObject.extra || {}, options.extraData);
+    }
+    return dataObject
+  }
+
+
   // remember, validate strips extra fields silently!
   let wrap_valid = (d) => {
     try {
@@ -160,11 +174,12 @@ let phonehome = exports.phonehome = function(dataObject, options){
     }
   };
 
-  dataObject.
-    then(wrap_valid).
-    then(send).then(
-      null,
-      console.error);
+  dataObject.then(
+  addExtra).then(
+  wrap_valid).then(
+  send).then(
+    null,
+    console.error);
 
   return promise;
 };

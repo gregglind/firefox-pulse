@@ -204,7 +204,7 @@ let decideday = exports.decideday = function (ts, days, r) {
   if (days === undefined) days = samplingconfig.days;
   if (r === undefined) r = randint(days);
 
-  let when = ts + 86400 * 1000  /*day*/ * days;
+  let when = ts + 86400 * 1000  /*day*/ * r;
   myprefs.runafter = when + "";
   myprefs.decideday = JSON.stringify([ts, days, r]);
 };

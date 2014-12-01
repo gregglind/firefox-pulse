@@ -14,11 +14,11 @@
 }
 
 .pulse {
-  animation-name: pulse2;
+  animation-name: pulse;
 }
 
 
-@keyframes pulse2 {
+@keyframes pulse {
    10% {
       transform: scale(1.2);
    }

@@ -12,6 +12,10 @@
 
 "use strict";
 
+
+
+
+
 const promises = require("sdk/core/promise");
 const request = require("sdk/request");
 const { extend } = require("sdk/util/object");
@@ -45,29 +49,25 @@ let annotate = exports.annotate = function (obj) {
   obj.response_version = 1;
   obj.updated_ts = Date.now();
 
-
   personinfo.getData().then(
     function (data) {
-      //obj = extend({}, obj, data);
-      console.log("OBJECT");
-      console.log(JSON.stringify(obj,null,2));
-
-//rint("Running tests on " + system.name + " " + system.version + "/Gecko " + system.platformVersion + " (" + system.id + ") under " +
-//                 system.platform + "/" + system.architecture + ".\n");
-
       obj.platform = data.os; // will be better
       obj.channel = data.updateChannel;
       obj.version = data.fxVersion;
       obj.locale = data.location;
-      obj.build_id = data.prefs['gecko.buildID'] || "-", // TODO
-      obj.partner_id = data.prefs['distribution.id'] || "-", // TODO
-      obj.profile_age = data.profileage,
-      obj.profile_usage = {total:data.sumMs},
-      obj.addons = {"addons": data.addons},
+
+      // modified per https://bugzilla.mozilla.org/show_bug.cgi?id=1092375
+      obj.build_id = data.prefs['gecko.buildID'] || "-";
+      obj.partner_id = data.prefs['distribution.id'] || "-";
+      obj.profile_age = data.profileageCeilingCapped365; // capped at 365.  rounded
+      obj.profile_usage = {total30:data.sumMs30, useddays30: data.useddays30};
+
+      obj.addons = {"addons": data.addons};
       obj.extra = {
         crashes: data.crashes,
-        prefs: data.prefs,
-        engage: obj.flow_links
+        //prefs: data.prefs,  // dropped per https://bugzilla.mozilla.org/show_bug.cgi?id=1092375
+        engage: obj.flow_links,
+        numflows: myprefs.numflows
       };
 
       obj.experiment_version = data.addonVersion;
@@ -85,6 +85,7 @@ let config = exports.config  = {
   testing: true,         // append on a flag?
   url: "https://input.mozilla.org/api/v2/hb/",
   //url: "https://testpilot.mozillalabs.com/submit/" + "pulse-uptake-experiment",
+  extraData:  null
 };
 
 /** Send data to Heartbeat Input
@@ -116,17 +117,12 @@ let phonehome = exports.phonehome = function(dataObject, options){
 
   let { promise, reject, resolve } = promises.defer();
   function requestCompleted(which, cb, response) {
-    // worth catching errors here?  If so, so what to do next?
-    // TODO check responses
-    console.log("REQUEST COMPLETE", which, response.status, response.text);
+    // FUTURE: worth catching errors here?  If so, so what to do next?
+    //console.log("REQUEST COMPLETE", which, response.status, response.text);
     cb(response);
   }
 
-  if (options.testing) {
-    dataObject.is_test = true;
-  } else {
-    dataObject.is_test = false;
-  }
+  dataObject.is_test = !!options.testing;
 
   let send = function (dataObject) {
     /** TP packet
@@ -159,6 +155,15 @@ let phonehome = exports.phonehome = function(dataObject, options){
   // this becomes a promise.
   dataObject = annotate(dataObject);
 
+  // or things like testpilot and such.
+  let addExtra = function (dataObject) {
+    if (options.extraData) {
+      dataObject.extra = extend({}, dataObject.extra || {}, options.extraData);
+    }
+    return dataObject
+  }
+
+
   // remember, validate strips extra fields silently!
   let wrap_valid = (d) => {
     try {
@@ -169,11 +174,12 @@ let phonehome = exports.phonehome = function(dataObject, options){
     }
   };
 
-  dataObject.
-    then(wrap_valid).
-    then(send).then(
-      null,
-      console.error);
+  dataObject.then(
+  addExtra).then(
+  wrap_valid).then(
+  send).then(
+    null,
+    console.error);
 
   return promise;
 };

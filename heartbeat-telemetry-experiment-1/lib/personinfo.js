@@ -26,8 +26,6 @@ function getAddonVersion(){
 }
 
 // parses the fhr 'data' object and calls the callback function when the result is ready.
-// callback(profileAgeDays, sumMs)
-// https://github.com/raymak/contextualfeaturerecommender/issues/136
 
 function parseFHRpayload (data) {
   console.log("parsing FHR payload");
@@ -39,6 +37,7 @@ function parseFHRpayload (data) {
   var aMonthAgoDate = new Date(todayDate.getTime() - 30 * 24 * 3600 * 1000);
   let sumMs = 0;
   var profileAgeDays = Date.now()/(86400*1000) - data.data.last["org.mozilla.profile.age"].profileCreation;
+  var useddays30 = 0;
 
   let crashes = {
     total: 0,
@@ -64,6 +63,7 @@ function parseFHRpayload (data) {
       if (date >= aMonthAgoDate && date < todayDate) {
         if (days[key]["org.mozilla.appSessions.previous"]) {
           if (days[key]["org.mozilla.appSessions.previous"].cleanActiveTicks) {
+            useddays30 += 1;
             days[key]["org.mozilla.appSessions.previous"].cleanActiveTicks.forEach(function (elm) {
                 sumMs = sumMs + elm * 5 * 1000;
             });
@@ -72,7 +72,7 @@ function parseFHRpayload (data) {
       }
     }
   }
-  return {profileage: profileAgeDays, sumMs: sumMs, crashes: crashes};
+  return {useddays30: useddays30 , profileageCeilingCapped365: Math.min(365, Math.ceil(profileAgeDays || 1)), sumMs30: sumMs, crashes: crashes};
 }
 
 
@@ -96,12 +96,10 @@ let getData = exports.getData = function () {
 
   let annotatePrefs = function () {
     d.prefs = {};
-    [ "browser.search.defaultenginename",
-      "privacy.donottrackheader.enabled",
-      "privacy.donottrackheader.value",
-      "places.history.enabled",
-      "browser.tabs.remote",
-      "browser.tabs.remote.autostart",
+    [ // "browser.search.defaultenginename",
+      // "privacy.donottrackheader.enabled",
+      // "privacy.donottrackheader.value",
+      // "places.history.enabled",
       "distribution.id",
       "gecko.buildID"
       ].forEach(function(k) {

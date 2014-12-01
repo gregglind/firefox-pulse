@@ -44,25 +44,14 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* License: MPL2 */
+
 	"use strict";
 
 	/*global console, self, require*/
 
 	console.log("uitest script!");
 	var $ = __webpack_require__(2);
-
-	/*
-	if (self.port === undefined) {
-	  self.port = require("./fake-port").port;
-	}
-
-	// dev garbage
-	if (self.options === undefined) {
-	  console.log("using fake ui");
-	  self.options = {
-	  };
-	}
-	*/
 
 	(function ($) {
 	  console.log("after page!");

@@ -22,14 +22,11 @@ const flow = require("flow");
 
 
 let afterPageRe = exports.afterPageRe = /.*experiment1\/(happy|sad|neutral)\.html.*/
-
 // https://input.allizom.org/static/hb/experiment1/happy.html
 
 let factory = exports.factory = function (cso) {
   let P = pageMod.PageMod({
     include: afterPageRe,
-    //contentScriptFile: data.url('packed-after.js'),
-    //contentScriptOptions: cso,
     contentScriptFile: data.url('packed-after.js'),
     contentScriptOptions: cso,
     contentStyle: [],
@@ -39,7 +36,7 @@ let factory = exports.factory = function (cso) {
         console.log("afterPage link clicked", link, cso.mood);
         // engage, set up after links.
         if (flow.current()) {
-          flow.engaged(); // only first one!  flow protects us :)
+          flow.engaged(); // only first one!  flow.js protects us
           flow.link(link, cso.mood);
           flow.persist();
           phonehome.phonehome();
@@ -52,30 +49,3 @@ let factory = exports.factory = function (cso) {
   });
   return P;
 };
-
-/*
-let factory = exports.factory = function (cso) {
-  cso = cso || extend({},Q, {flowid: flowid, rating: 3}); // fake
-  let P = pageMod.PageMod({
-    include: afterPageRe
-    //include: /.*uitest.html/,
-    contentScriptFile: data.url('packed-after.js'),
-    contentScriptOptions: cso,
-    onAttach: function(worker) {
-      worker.port.on("link", function (q) {
-        console.log("afterPage link clicked", q);
-        q.msg = "afterPage-link";
-        // TODO
-        // engage, set up after links.
-        phonehome.phonehome(q);
-        if (flow.currrent)
-        flow.engage();
-      });
-    },
-    onDetach: function(worker) {
-      P.destroy();
-    }
-  });
-  return P;
-};
-*/

@@ -24,6 +24,13 @@ const micropilot = require("micropilot-trimmed");
 const { emit } = require('sdk/event/core');
 const apiUtils = require("sdk/deprecated/api-utils");
 
+const { hasE10s } = require("e10s");
+
+if (hasE10s()) {
+  micropilot.killaddon();
+}
+
+
 let validateStaticArgs = function (staticArgs) {
   let rules = {
     showui: {is: ['boolean']},
@@ -35,7 +42,8 @@ let validateStaticArgs = function (staticArgs) {
       ok: (x)=> (x>=0) && (x < arms.ARMS().length),
       msg: "armnumber must be int in [0,"+ (arms.ARMS().length-1) + "]"},
     killafter:  {is: ['number']},
-    lateenough: {is: ['boolean']}
+    lateenough: {is: ['boolean']},
+    extradata:  {is: ['object']},
   };
 
   Object.keys(staticArgs).forEach(function (k){
@@ -61,7 +69,7 @@ let validateStaticArgs = function (staticArgs) {
   * - delay  (until showing question)
   * - killafter
   * - lateenough - boolean, debug flag
-  *
+  * - extradata  - fields for adding to the phonehome
   */
 let main = exports.main = function (options, callback) {
 
@@ -72,7 +80,7 @@ let main = exports.main = function (options, callback) {
   if (options.showui) {
     require("./ui/ui-demo");
     let tabs = require("sdk/tabs");
-    tabs.open(self.data.url("ui-demo.html"));  // TODO, fix
+    tabs.open(self.data.url("ui-demo.html"));
   }
 
   if (options.reset) {
@@ -85,6 +93,10 @@ let main = exports.main = function (options, callback) {
   }
   if (options.testing !== undefined) {
     phonehome.config.testing = options.testing;  // default: true
+  }
+
+  if (options.extradata !== undefined) {
+    phonehome.config.extraData = options.extradata;  // default: null
   }
 
   if (options.delay !== undefined) {
@@ -173,3 +185,13 @@ let main = exports.main = function (options, callback) {
 
 
 // on unload? -- nothing to do?  Should we clear prefs?
+
+
+exports.onUnload = function (reason) {
+  if ((reason === "disable") || reason === "uninstall") {
+    experiment.reset();
+  }
+};
+
+
+

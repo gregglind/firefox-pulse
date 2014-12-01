@@ -21,8 +21,6 @@ const utils = require("utils");
 let undo = [];
 
 let reset = exports.reset = function () {
-  // TODO, improve by taking any that return promises and waiting.
-  // not sure how this should work.
   undo.forEach(function (k, i) {
     (k[0]).apply(k[1], k.slice(2));
   });
@@ -32,13 +30,11 @@ let reset = exports.reset = function () {
   *
   * Args:
   *   consequence_fn: callback. what happens after completion.
-  *     (todo: should these take args?)
   *   extra args: specific to each.
   *
   * Returns:  unclear
   */
 
-//
 let tabObs = require('sdk/tabs/observer').observer;
 
 /** (about 500 ms after newtab open)
@@ -58,13 +54,9 @@ let newtab = exports.newtab = function (consequence_fn) {
   };
 
   tabObs.on("open", selfRemoving); // really, it's a 'once'
-  //console.log("48", tabObs._listeners("open").map((x) => console.log(x.toSource())));
 
   let args = [tabObs.removeListener, tabObs, 'open', selfRemoving];
-  //console.log(args.map((x)=>typeof x));
-  //console.log('49', args);
   undo.push(args);
-  //console.log('51',undo);
 };
 
 /** 'wait a bit' triggers */

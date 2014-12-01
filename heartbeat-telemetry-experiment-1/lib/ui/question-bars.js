@@ -16,7 +16,7 @@
 // - Font and icon sizing affects parent.  Thus if other notification showing in
 //   queue, will affect it too.
 // - no accessibility features AT ALL.
-
+// - retina might look awful.
 
 
 /**  USAGE
@@ -27,7 +27,7 @@
   * let o = makeNotice("nps", {mikestyle: true})
   * let o = makeNotice("stars", {mikestyle: true, msg: "Is Firefox Awesome, or the MOST AWESOME?", minus: "just awesome", plus: "most awesome"})
   * let o = makeNotice("stars", {mikestyle: true, msg: "Is Firefox Awesome, or the MOST AWESOME?", minus: "just awesome", plus: "most awesome", outmsg="Who rules?  YOU DO!  Thanks.", delay: 2000})
-  *
+  */
 
 /** sources and links
   *
@@ -46,7 +46,6 @@
   * http://blog.verint.com/net-promoter-score-nps-criticisms-and-best-practices
   * (suggests 7 point bipolar)
   */
-
 
 const {getMostRecentBrowserWindow} = require("sdk/window/utils");
 const tabs = require("sdk/tabs");
@@ -67,7 +66,8 @@ const sss = require("stylesheetservice");
 sss.register(sss.getURI(data.url("icons/iconstyles.css")));
 
 
-// utils
+/** Utilities */
+
 let hoverize = function (el, fhover, foff) {
   el.addEventListener("mouseover", fhover);
   el.addEventListener("mouseout", foff);
@@ -95,33 +95,17 @@ function styleEl (el, styles, unset ) {
   }
 }
 
-function simulateClick (el) {
-  let event = new MouseEvent('click', {
-    'view': window,
-    'bubbles': true,
-    'cancelable': true
-  });
-  //var cb = document.getElementById('checkbox');
-  //var canceled = !cb.dispatchEvent(event);
-  //if (canceled) {
-  //  // A handler called preventDefault.
-  //  alert("canceled");
-  //} else {
-  //  // None of the handlers called preventDefault.
-  //  alert("not canceled");
-  //}
-}
 
 /** Notification Bar Overview
-
-1.  Append Notification (creating by side effect)
-2.  Modify that notification
-
-Problems:
-
-1.  Possible: temporarily visible non widgeted bar
-
-*/
+  *
+  * 1.  Append Notification (creating by side effect)
+  * 2.  Modify that notification
+  *
+  * Problems:
+  *
+  * 1.  Possible: temporarily visible non widgeted bar
+  * 2.  Affects box styling of other events in the queue
+  */
 
 let starchar = "★";
 let staroff = data.url("icons/star-off.png");
@@ -135,23 +119,12 @@ let makeStarElString = function (n) {
   }
   return out;
 };
-/*
-let makeStarElString = function (n) {
-  let out = [];
-  for (let ii = 0; ii < n; ii++) {
-    let j = ii+1;
-    out.push(`<span class="star-x" style='background-repeat: "no-repeat"; background-size: "24px 24px"; cursor: pointer; width:24px; height:24px;' data-score="${j}" id="star${j}"></span>`);
-  }
-  return out;
-};*/
-
 
 let makeNpsString = function () {
   let n = 11;
   let out = [];
   for (let ii = 0; ii < n; ii++) {
     let j = ii;
-    // out.push(`<span class="star-x" style="background-color:rgba(0, 0, 255,.1); margin: 0px 3px; width:30px; display: block; text-align: center;" id="star`+ j +`">`+ ii +`</span>`);
     out.push(`<span class="star-x" data-score="`+ j +`" style="cursor: pointer; border: 1px solid #C1C1C1;  width: 28px; height:28px; border-radius: 0px; margin: 0px 0px; display: table-cell; vertical-align: middle; text-align: center;" id="star`+ j +`">`+ ii +`</span>`);
   }
   return out;
@@ -166,8 +139,6 @@ let defaultBarConfig = {
     widgetstring:  makeStarElString(5 /*nstars*/).join("\n"),
     widgetLitStyles: {
       backgroundImage:  "url(" + starlit + ")"
-
-      //color: 'orange'
     },
     widgetUnlitStyles: {
       backgroundImage:  "url(" + staroff + ")"
@@ -180,31 +151,24 @@ let defaultBarConfig = {
     minus:"not at all",   // nice minus
     widgetstring:  makeNpsString().join("\n"),
     widgetLitStyles: {
-      //color: 'white',
       backgroundColor: "#DADADA", // "#EBEBEB",
-      //boxShadow: "0px 0px 0px 2px rgba(255,255,255,1)" // white
     },
     widgetUnlitStyles: {
-      //color: 'white',
       backgroundColor: "#FBFBFB",
-      //boxShadow: "0px 0px 0px 2px rgba(255,255,255,.1)"
     },
     _v:  "nps.v1"
   }
 };
 
 
-// http://people.mozilla.org/~mmaslaney/prompt/Prompt-spec.png
-// partial impl.
-
-// TODO, these are OS dependent. Make it so!
+// implements (partial) http://people.mozilla.org/~mmaslaney/prompt/Prompt-spec.png
 let mikestyle = {
   // osx
   notice:  {
     color: '#333333',
     fontWeight: "normal",
     fontFamily: "Lucida Grande, Segoe, Ubuntu",
-    //lineHeight: "16px",
+    //lineHeight: "16px", // in spec, ignoring
     background: "#F1F1F1",
     backgroundImage:  ['inherit', 'linear-gradient(-179deg, #FBFBFB 0%, #EBEBEB 100%)'][!!(os.toLowerCase() === "darwin")], // no image!
     boxShadow: "0px 1px 0px 0px rgba(0,0,0,0.35)"
@@ -212,9 +176,9 @@ let mikestyle = {
   messageText: {
     fontWeight: "normal",
     fontFamily: "Lucida Grande",
-    //fontSize: "11.5px",
+    //fontSize: "11.5px", // in spec, ignoring.
     color: '#333333',
-    //lineHeight: "16px",
+    //lineHeight: "16px", // in spec, ignoring
   },
   exit: {
     marginLeft: "10px"
@@ -225,16 +189,9 @@ let mikestyle = {
 };
 
 
-//let baseEngageUrl = data.url("pages/");
-//let baseEngageUrl = "https://input.allizom.org/static/hb/experiment1/";
 let baseEngageUrl = "https://input.mozilla.org/static/hb/experiment1/";
-// TODO, plumb the links
-// TODO, query arg out interesting stuff?
-//
-// these are very specific to these ui's
+
 let openEngagementPage = exports.openEngagementPage = function(which, score, qargs) {
-  // oddness... opening as .png seems to be weird for some reason!
-  // maybe resource:// weirdness for .png?
   let urlargs = extend({}, qargs, {rating: score});
   let urlize = (s, qargs) => baseEngageUrl + s + "?" + querystring.stringify(qargs);
 
@@ -262,7 +219,6 @@ let openEngagementPage = exports.openEngagementPage = function(which, score, qar
   }
 
   let url = urls[mood];
-  //console.log(url,afterPage.afterPageRe, afterPage.afterPageRe.test(url) )
   if (!afterPage.afterPageRe.test(url)) { throw "after page url wont be modded: " + url }
 
   afterPage.factory({mood: mood}); // page mod
@@ -270,22 +226,47 @@ let openEngagementPage = exports.openEngagementPage = function(which, score, qar
 };
 
 
-let oneOf = function (choices_array) {
-  return (thing) => choices_array.find(thing) >=0
+/** arg checking */
+let mustBeOneOf = function (name, choices_array, thing) {
+  if (choices_array.indexOf(thing) < 0) {
+    throw name + " must be one of " + choices_array.join("|");
+  }
 };
 
 let mustDefined = (x) => {if (x === undefined) {throw "must be defined";}};
 
-// unclear what arity and args should be here.
+
+/** create question noficiation bars
+  *
+  *  Arguments:
+  *  - which    : nps|stars
+  *  - flowid   : (string, closed into engagement page)
+  *  - barytype : top-global|bottom-global
+  *  - overrides :
+  *       - mikestyle:  bool
+  *       - msg      :  string
+  *       - icon     :  heart|fx|question  or url
+  *
+  *  Returns object {
+  *    win: win,
+  *    box: box,
+  *    scoreEl: scoreEl,
+  *    notice: notice,
+  *    which: which,
+  *    messageImage: messageImage,
+  *    messageText: messageText,
+  *    closeButton: closeButton,
+  *    config:  conf
+  *  };
+  */
 let makeNotice = function (which, flowid, bartype, overrides) {
   if (overrides === undefined) overrides = {};
 
   mustDefined(flowid);
   mustDefined(which);
   mustDefined(bartype);
-  oneOf(["nps", "stars"], which);
-  oneOf(["top-global", "bottom-global"], bartype);
-
+  mustBeOneOf("which", ["nps","stars"], which);
+  mustBeOneOf("bartype", ["top-global", "bottom-global"], bartype);
 
   // should we mixin the overrides over the conf?
   // TODO, maybe after one more :)
@@ -402,9 +383,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
   notice.appendChild(scoreEl);
   scoreEl.style.width="24px";
   scoreEl.style.textAlign = "center";
-  scoreEl.style.display = "block";
   scoreEl.style.margin = "0px 10px";
-  scoreEl.style.display = "none";
+  scoreEl.style.display = "none"; // would be 'block'
 
   // name of this button set
   let starEl = notice.children.star;
@@ -464,8 +444,6 @@ let makeNotice = function (which, flowid, bartype, overrides) {
     });
   })(starEl, conf.widgetLitStyles, conf.widgetUnlitStyles);
 
-  // hoverize(starEl, (el) => styleEl(starEl, stylesOn), (el) => styleEl(starEl, stylesOn, true))
-
   // click emits and closes the bar.
   starEl.addEventListener("click", function (evt) { /*weak*/
     let s = evt.target.getAttribute("data-score");
@@ -491,7 +469,8 @@ let makeNotice = function (which, flowid, bartype, overrides) {
 
     openEngagementPage(which, rating, {flowid: flowid, armname: conf.armname});
     win.setTimeout(() => {
-      messageImage.classList.remove('animatetwice',"pulse");
+      // TODO, pulsing here is desired, but didn't work GRL
+      // messageImage.classList.remove('animatetwice',"pulse");
       box.removeCurrentNotification();
     }, delay);
   });

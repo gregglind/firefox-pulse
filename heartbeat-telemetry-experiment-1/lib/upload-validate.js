@@ -14,8 +14,6 @@
 
 const apiUtils = require("sdk/deprecated/api-utils");
 
-// TODO, handle 'emptiness' for non-strings
-
 let vstring = function (name, emptyok ) {
   let msgs = [" must be a non-empty string", " must be a string"];
   return {
@@ -27,9 +25,7 @@ let vstring = function (name, emptyok ) {
 
 let vScore = function(name) {
   return {
-    //map: (val) => Number(val,10),
     is: ["number", 'null'],
-    //ok: (val) => val === null ||
     msg: name + " must be a Number or Null to be a Score"
   };
 };
@@ -45,14 +41,12 @@ let vJsonableObject = function (name) {
 let vArray = function (name) {
   return {
     is: ['array'],
-    //ok: (val) => JSON.stringify(val)[0]==="{",
     msg: name + " not Array"
   };
 };
 
 
 let vNumber = function (name) {
-  // empty isn't handled here.
   return {
     is: ["number"],
     msg: name + "not a Number"
@@ -73,15 +67,17 @@ let vTimestamp = function (name) {
   };
 };
 
-//let vuuid = function (name, emptyok) {
-//  let out = vstring(name, emptyok);
-//  out.ok = (val) => emptyok || val.length >
-//  extends() {} vstring);
-//
 
-/**
-returns object with keys good, errros
-*/
+/** validates Heartbeat upload object.
+  * Argument:  packet (JSONable object)
+  *
+  * Returns:
+  *    validated per http://fjord.readthedocs.org/en/latest/hb_api.html
+  *
+  * Note:
+  *    extra keys aren't returned, silently stripped.
+  *
+  */
 let validate = exports.validate = function (packet) {
   //let errors = [];
   //let good = true;
@@ -95,8 +91,9 @@ let validate = exports.validate = function (packet) {
     "question_text": vstring('question_text', false),  //"how was lunch?",
     "variation_id": vstring('variation_id', false),  // "1",
     "experiment_version": vstring('experiment_version', false),  // "1"
+
     // fields for this study...
-    "score": vScore("score"),  // null,  TODO, 0 is a valid score for nps
+    "score": vScore("score"),  // null, 0 is a valid score for nps
     "max_score": vScore("max_score"),   //
     "flow_began_ts": vTimestamp("flow_began_ts"),  //
     "flow_offered_ts": vTimestamp("flow_offered_ts"),  //
@@ -113,11 +110,11 @@ let validate = exports.validate = function (packet) {
     "profile_usage": vJsonableObject("profile_usage"),    //
     "addons": vJsonableObject("addons"), // lets do {addons} ... vArray("addons"),           //
     "extra": vJsonableObject("extra"),
-    // is this real?
+
+    // is packet real?
     "is_test": vboolean('is_test'), //true
   };
   return apiUtils.validateOptions(packet, rules);
-  //return {good:good, errors: errors };
 };
 
 

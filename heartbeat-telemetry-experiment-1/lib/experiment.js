@@ -97,7 +97,7 @@ let firstStartup = exports.firstStartup = function (armnumber) {
 
   //setup
   myprefs.firstrunts = "" + Date.now();
-  myprefs.person_id = uu();
+  myprefs.person_id = "na"; // uu();
   myprefs.survey_id = "telemetry-heartbeat-experiment-1";
 
   decideday(Date.now(), samplingconfig.days);
@@ -204,7 +204,7 @@ let decideday = exports.decideday = function (ts, days, r) {
   if (days === undefined) days = samplingconfig.days;
   if (r === undefined) r = randint(days);
 
-  let when = ts + 86400 * 1000  /*day*/ * days;
+  let when = ts + 86400 * 1000  /*day*/ * r;
   myprefs.runafter = when + "";
   myprefs.decideday = JSON.stringify([ts, days, r]);
 };

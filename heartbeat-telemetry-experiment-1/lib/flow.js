@@ -17,10 +17,11 @@ const { extend } = require("sdk/util/object");
 
 console.log("flow, no promises");
 
-// TODO, should this be part of the experiment?
-// TODO, should be event based / part of hte experiment tracker
+// FUTURE: should be event based / part of hte experiment tracker
 
 let flow_base = {
+  // COMPARED TO upload-validate, for ref.
+
   //"person_id": vstring('person_id', false), // "c1dd81f2-6ece-11e4-8a01-843a4bc832e4",
   //"survey_id": vstring('survey_id', false), //"lunch",
   "flow_id": "", //vstring('flow_id', false), // "20141117_attempt1",
@@ -31,7 +32,7 @@ let flow_base = {
   "variation_id": "",  //vstring('variation_id', false),  // "1",
 
   // fields for this study...
-  "score": null, //vScore("score"),  // null,  TODO, 0 is a valid score for nps
+  "score": null, //vScore("score"),  // null,
   "max_score": null, //vScore("max_score"),   //
   "flow_began_ts": 0, //vTimestamp("flow_began_ts"),  //
   "flow_offered_ts": 0, // vTimestamp("flow_offered_ts"),  //
@@ -51,7 +52,7 @@ let flow_base = {
   //// is this real?
   //"is_test": vboolean('is_test') //true
 
-  "flow_links": []  // array of (ts, id)  // TODO
+  "flow_links": []  // array of (ts, id)
 };
 
 let _current;
@@ -82,6 +83,11 @@ let create = exports.create = function (flow_id, Q) {
   _current.question_text = Q.msg;
   _current.question_id = Q.alias;
   _current.max_score = Q.max_score;
+
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1092375#c11
+  if (!myprefs.numflows) myprefs.numflows = 0;
+  myprefs.numflows += 1;
+
 };
 
 let persist = exports.persist = function () {

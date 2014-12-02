@@ -44,6 +44,7 @@ let validateStaticArgs = function (staticArgs) {
     killafter:  {is: ['number']},
     lateenough: {is: ['boolean']},
     extradata:  {is: ['object']},
+    days: {is: ['number'], ok: (x)=> x>0, msg: "days must be non-neg"}, // pos!
   };
 
   Object.keys(staticArgs).forEach(function (k){
@@ -104,6 +105,9 @@ let main = exports.main = function (options, callback) {
     arms.regenerate();
   }
 
+  if (options.days !== undefined) {
+    experiment.samplingconfig.days = options.days;
+  }
   // options.lateenough # handled down below
 
   // decide and implement arm

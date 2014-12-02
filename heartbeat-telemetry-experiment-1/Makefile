@@ -70,7 +70,7 @@ addon-tp: deps
 	echo "addon-tp"
 	cd $(TOP)
 	cfx xpi \
-		--static-args='{"phonehome": true, "testing": false, "extradata": {"testpilot": true}}' \
+		--static-args='{"phonehome": true, "testing": false, "extradata": {"testpilot": true}, "days": 2 }' \
 	  --output-file addons/$(TPNAME).xpi \
 		--update-link https://testpilot.mozillalabs.com/addons/$(TPNAME).xpi \
 		--update-url https://testpilot.mozillalabs.com/addons/$(TPNAME).update.rdf $(OPTS)

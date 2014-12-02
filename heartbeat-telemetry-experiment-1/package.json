@@ -7,7 +7,7 @@
   "author": "Gregg Lind <glind@mozilla.com>",
   "title": "Heartbeat Telemetry Experiment 1",
   "homepage": "https://github.com/gregglind/firefox-pulse",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "lib/index.js",
   "id": "heartbeat-telemetry-experiment-1@mozilla.com",
   "name": "heartbeat-telemetry-experiment-1",

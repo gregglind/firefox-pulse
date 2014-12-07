@@ -6,7 +6,7 @@ VERSION ?= $(shell python -c "import json;print json.load(open('package.json'))[
 TOP ?= $(shell pwd)
 FOX=Aurora
 NAME=pulse-response-rate-ui-test
-TPNAME=heartbeat-response-tp-experiment-2a
+TPNAME=heartbeat-response-tp-experiment-2b
 
 ADDONFORTESTNAME=pulse-uptake-test-testaddon
 
@@ -58,6 +58,14 @@ deps:
 	./node_modules/webpack/bin/webpack.js
 
 # for telemetry experiment
+
+telemetry-experiment-local: deps
+	cd $(TOP)
+	cfx xpi \
+	  --static-args='{"phonehome": false, "testing": true}' \
+	  --templatedir ext-template/ \
+	  --output-file addons/heartbeat-telemetry-experiment-1-type-128.xpi
+
 telemetry-experiment: deps
 	cd $(TOP)
 	cfx xpi \
@@ -70,7 +78,7 @@ addon-tp: deps
 	echo "addon-tp"
 	cd $(TOP)
 	cfx xpi \
-		--static-args='{"phonehome": true, "testing": false, "extradata": {"testpilot": true}, "days": 2 }' \
+		--static-args='{"phonehome": true, "testing": false, "extradata": {"testpilot": true, "lateenogh": true}, "days": 2, "lateenough": true }' \
 	  --output-file addons/$(TPNAME).xpi \
 		--update-link https://testpilot.mozillalabs.com/addons/$(TPNAME).xpi \
 		--update-url https://testpilot.mozillalabs.com/addons/$(TPNAME).update.rdf $(OPTS)

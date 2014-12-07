@@ -47,5 +47,5 @@ let getnb = function () {
   };
 };
 
-let loop = (thing, fn) [].forEach.call(thing, fn);
+let loop = (thing, fn) => [].forEach.call(thing, fn);
 

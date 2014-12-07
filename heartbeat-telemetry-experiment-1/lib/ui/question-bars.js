@@ -108,8 +108,8 @@ function styleEl (el, styles, unset ) {
   */
 
 let starchar = "★";
-let staroff = data.url("icons/star-off.png");
-let starlit = data.url("icons/star-lit.png");
+let staroff = data.url("icons/star.svg");
+let starlit = data.url("icons/star-lit.svg");
 
 let makeStarElString = function (n) {
   let out = [];

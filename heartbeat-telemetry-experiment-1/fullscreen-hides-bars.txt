@@ -1,0 +1,35 @@
+Fullscreen hides bars:
+- browser/base/content/browser.css
+
+#main-window[inFullscreen] #global-notificationbox,
+#main-window[inFullscreen] #high-priority-global-notificationbox {
+  visibility: collapse;
+}
+
+browser/base/content/browser-fullScreen.js
+
+
+1. I am not sure that I agree with this!
+
+However, less than %1 of sessions are in fullscreen mode.
+
+(Fullscreen is supposed to be presentation?  If so, let's call it that, and do:
+
+#main-window[inPresentationMode] #global-notificationbox,
+)
+
+(or redesign presentation mode?)
+
+
+Why devtools should care about presentation mode on all platforms:
+- parity with chrome
+- getting devs to present.
+- ask Dan C. what is works and what can be expanded here.
+- solution seems small and doable.
+- good contributor project
+
+
+
+
+
+

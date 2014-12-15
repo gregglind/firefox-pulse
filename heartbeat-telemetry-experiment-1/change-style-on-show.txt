@@ -1,0 +1,67 @@
+#
+
+## Problem:  question-bar styling affects showing notices.
+
+## Mechanism:  styling happens on 'create'.  The messageImage is larger than that
+of a default nbox.
+
+## Possible Fixes:
+
+1.  "Wontfix".  Accept it as a polish nit.
+2.  "Don't do that".  No styling that affect box height.
+3.  "onShow" Add (eventually?) new alerts for about-to-show, showing, close, etc.
+4.  (some other solution that knows when nb is 'about to show').
+
+## Recommended Solution
+
+I recommend (1) for 36, (2) for 37/38.
+
+
+## Expansion of "onShow" idea
+
+To make this work correctly, styling should happen at "about to show".
+
+The icon size stuff bleeds into to the nbox size stuff.
+
+"AlertActive" is unclear.  Seems to fire "a lot" for a given notification.
+
+Maybe add more events here?
+- AlertClose  (only in metro!)
+- AlertKilled
+- AlertShow
+
+
+accessible/generic/RootAccessible.cpp
+
+
+36374 glind ~/hgs/mozilla-central/src [hg:default]$ grep -r AlertActive *
+accessible/generic/RootAccessible.cpp:  "AlertActive",
+accessible/generic/RootAccessible.cpp:  if (eventType.EqualsLiteral("AlertActive")) {
+browser/base/content/test/general/browser_datareporting_notification.js:    notification.addEventListener("AlertActive", function active() {
+browser/base/content/test/general/browser_datareporting_notification.js:      notification.removeEventListener("AlertActive", active, true);
+browser/base/content/test/general/browser_datareporting_notification.js:    notification1.addEventListener("AlertActive", function active1() {
+browser/base/content/test/general/browser_datareporting_notification.js:      notification1.removeEventListener("AlertActive", active1, true);
+browser/base/content/test/general/browser_datareporting_notification.js:    notification2.addEventListener("AlertActive", function active2() {
+browser/base/content/test/general/browser_datareporting_notification.js:      notification2.removeEventListener("AlertActive", active2, true);
+browser/metro/base/content/bindings/notification.xml:          this.addEventListener("AlertActive", this.handleEvent, true);
+browser/metro/base/content/bindings/notification.xml:          this.removeEventListener("AlertActive", this.handleEvent, true);
+browser/metro/base/content/bindings/notification.xml:            event.initEvent("AlertActive", true, true);
+browser/metro/base/content/bindings/notification.xml:              case "AlertActive":
+browser/metro/base/content/ContextUI.js:    Elements.browsers.addEventListener("AlertActive", this, true);
+browser/metro/base/content/ContextUI.js:      case "AlertActive":
+
+
+
+36379 glind ~/hgs/mozilla-central/src [hg:default]$ grep -r AlertClose *
+browser/base/content/test/general/browser_datareporting_notification.js:      function onAlertClose() {
+browser/base/content/test/general/browser_datareporting_notification.js:      waitForNotificationClose(notification1.currentNotification, onAlertClose);
+browser/base/content/test/general/browser_datareporting_notification.js:      waitForNotificationClose(notification2.currentNotification, onAlertClose);
+browser/metro/base/content/bindings/notification.xml:          this.addEventListener("AlertClose", this.handleEvent, true);
+browser/metro/base/content/bindings/notification.xml:          this.removeEventListener("AlertClose", this.handleEvent, true);
+browser/metro/base/content/bindings/notification.xml:            let event = new Event('AlertClose');
+browser/metro/base/content/bindings/notification.xml:              case "AlertClose":
+browser/metro/base/content/browser.js:      case "AlertClose": {
+browser/metro/base/content/browser.js:    notification.addEventListener("AlertClose", this);
+browser/metro/base/content/browser.js:      notification.removeEventListener("AlertClose", this);
+browser/metro/base/content/ContextUI.js:    Elements.browsers.addEventListener("AlertClose", this, true);
+browser/metro/base/content/ContextUI.js:      case "AlertClose":

@@ -288,7 +288,7 @@ let makeNotice = function (which, flowid, bartype, overrides) {
 
   let options = [
     overrides.msg || conf.msg, // msg,
-    null, // id,
+    flowid, // id,
     icon, // icon,
     1, // priority,
     null, // buttons,
